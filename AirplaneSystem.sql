@@ -1,3 +1,4 @@
+-- database should name lower-case
 DROP DATABASE IF EXISTS `AirplaneManagement`;
 CREATE DATABASE `AirplaneManagement`;
 USE `AirplaneManagement`;
