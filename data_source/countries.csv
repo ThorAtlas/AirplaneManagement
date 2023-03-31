@@ -1,0 +1,249 @@
+id,code,name,continent
+302672,AD,Andorra,Europe
+302618,AE,United Arab Emirates,Asia
+302619,AF,Afghanistan,Asia
+302722,AG,Antigua and Barbuda,North America
+302723,AI,Anguilla,North America
+302673,AL,Albania,Europe
+302620,AM,Armenia,Asia
+302556,AO,Angola,Africa
+302615,AQ,Antarctica,Antarctica
+302789,AR,Argentina,SA
+302763,AS,American Samoa,Oceania
+302674,AT,Austria,Europe
+302764,AU,Australia,Oceania
+302725,AW,Aruba,North America
+302621,AZ,Azerbaijan,Asia
+302675,BA,Bosnia and Herzegovina,Europe
+302726,BB,Barbados,North America
+302622,BD,Bangladesh,Asia
+302676,BE,Belgium,Europe
+302557,BF,Burkina Faso,Africa
+302677,BG,Bulgaria,Europe
+302623,BH,Bahrain,Asia
+302558,BI,Burundi,Africa
+302559,BJ,Benin,Africa
+302760,BL,Saint Barthelemy,North America
+302727,BM,Bermuda,North America
+302624,BN,Brunei,Asia
+302790,BO,Bolivia,SA
+302724,BQ,Caribbean Netherlands,North America
+302791,BR,Brazil,SA
+302728,BS,Bahamas,North America
+302625,BT,Bhutan,Asia
+302560,BW,Botswana,Africa
+302678,BY,Belarus,Europe
+302729,BZ,Belize,North America
+302730,CA,Canada,North America
+302626,CC,Cocos (Keeling) Islands,Asia
+302561,CD,Democratic Republic of the Congo,Africa
+302562,CF,Central African Republic,Africa
+302563,CG,Republic of the Congo,Africa
+302679,CH,Switzerland,Europe
+302564,CI,Cote d'Ivoire,Africa
+302765,CK,Cook Islands,Oceania
+302792,CL,Chile,SA
+302565,CM,Cameroon,Africa
+302627,CN,China,Asia
+302793,CO,Colombia,SA
+302731,CR,Costa Rica,North America
+302732,CU,Cuba,North America
+302566,CV,Cape Verde,Africa
+302762,CW,Cura_ao,North America
+302628,CX,Christmas Island,Asia
+302629,CY,Cyprus,Asia
+302680,CZ,Czech Republic,Europe
+302681,DE,Germany,Europe
+302567,DJ,Djibouti,Africa
+302682,DK,Denmark,Europe
+302733,DM,Dominica,North America
+302734,DO,Dominican Republic,North America
+302568,DZ,Algeria,Africa
+302794,EC,Ecuador,SA
+302683,EE,Estonia,Europe
+302569,EG,Egypt,Africa
+302570,EH,Western Sahara,Africa
+302571,ER,Eritrea,Africa
+302684,ES,Spain,Europe
+302572,ET,Ethiopia,Africa
+302685,FI,Finland,Europe
+302766,FJ,Fiji,Oceania
+302795,FK,Falkland Islands,SA
+302767,FM,Micronesia,Oceania
+302686,FO,Faroe Islands,Europe
+302687,FR,France,Europe
+302573,GA,Gabon,Africa
+302688,GB,United Kingdom,Europe
+302735,GD,Grenada,North America
+302630,GE,Georgia,Asia
+302796,GF,French Guiana,SA
+302689,GG,Guernsey,Europe
+302574,GH,Ghana,Africa
+302690,GI,Gibraltar,Europe
+302736,GL,Greenland,North America
+302575,GM,Gambia,Africa
+302576,GN,Guinea,Africa
+302737,GP,Guadeloupe,North America
+302577,GQ,Equatorial Guinea,Africa
+302691,GR,Greece,Europe
+302616,GS,South Georgia and the South Sandwich Islands,Antarctica
+302738,GT,Guatemala,North America
+302768,GU,Guam,Oceania
+302578,GW,Guinea-Bissau,Africa
+302797,GY,Guyana,SA
+302631,HK,Hong Kong,Asia
+350209,HM,Heard and McDonald Islands,Oceania
+302739,HN,Honduras,North America
+302692,HR,Croatia,Europe
+302740,HT,Haiti,North America
+302693,HU,Hungary,Europe
+302632,ID,Indonesia,Asia
+302694,IE,Ireland,Europe
+302633,IL,Israel,Asia
+302695,IM,Isle of Man,Europe
+302634,IN,India,Asia
+302635,IO,British Indian Ocean Territory,Asia
+302636,IQ,Iraq,Asia
+302637,IR,Iran,Asia
+302696,IS,Iceland,Europe
+302697,IT,Italy,Europe
+302698,JE,Jersey,Europe
+302741,JM,Jamaica,North America
+302638,JO,Jordan,Asia
+302639,JP,Japan,Asia
+302579,KE,Kenya,Africa
+302640,KG,Kyrgyzstan,Asia
+302641,KH,Cambodia,Asia
+302769,KI,Kiribati,Oceania
+302580,KM,Comoros,Africa
+302742,KN,Saint Kitts and Nevis,North America
+302642,KP,North Korea,Asia
+302643,KR,South Korea,Asia
+302644,KW,Kuwait,Asia
+302743,KY,Cayman Islands,North America
+302645,KZ,Kazakhstan,Asia
+302646,LA,Laos,Asia
+302647,LB,Lebanon,Asia
+302744,LC,Saint Lucia,North America
+302699,LI,Liechtenstein,Europe
+302648,LK,Sri Lanka,Asia
+302581,LR,Liberia,Africa
+302582,LS,Lesotho,Africa
+302700,LT,Lithuania,Europe
+302701,LU,Luxembourg,Europe
+302702,LV,Latvia,Europe
+302583,LY,Libya,Africa
+302584,MA,Morocco,Africa
+302703,MC,Monaco,Europe
+302704,MD,Moldova,Europe
+302705,ME,Montenegro,Europe
+302759,MF,Saint Martin,North America
+302585,MG,Madagascar,Africa
+302770,MH,Marshall Islands,Oceania
+302706,MK,North Macedonia,Europe
+302586,ML,Mali,Africa
+302649,MM,Myanmar,Asia
+302650,MN,Mongolia,Asia
+302651,MO,Macau,Asia
+302771,MP,Northern Mariana Islands,Oceania
+302745,MQ,Martinique,North America
+302587,MR,Mauritania,Africa
+302746,MS,Montserrat,North America
+302707,MT,Malta,Europe
+302588,MU,Mauritius,Africa
+302652,MV,Maldives,Asia
+302589,MW,Malawi,Africa
+302747,MX,Mexico,North America
+302653,MY,Malaysia,Asia
+302590,MZ,Mozambique,Africa
+302591,NA,Namibia,Africa
+302772,NC,New Caledonia,Oceania
+302592,NE,Niger,Africa
+302773,NF,Norfolk Island,Oceania
+302593,NG,Nigeria,Africa
+302748,NI,Nicaragua,North America
+302708,NL,Netherlands,Europe
+302709,NO,Norway,Europe
+302654,NP,Nepal,Asia
+302774,NR,Nauru,Oceania
+302775,NU,Niue,Oceania
+302776,NZ,New Zealand,Oceania
+302655,OM,Oman,Asia
+302749,PA,Panama,North America
+302798,PE,Peru,SA
+302777,PF,French Polynesia,Oceania
+302778,PG,Papua New Guinea,Oceania
+302656,PH,Philippines,Asia
+302657,PK,Pakistan,Asia
+302710,PL,Poland,Europe
+302750,PM,Saint Pierre and Miquelon,North America
+302779,PN,Pitcairn,Oceania
+302751,PR,Puerto Rico,North America
+302658,PS,Palestinian Territory,Asia
+302711,PT,Portugal,Europe
+302780,PW,Palau,Oceania
+302799,PY,Paraguay,SA
+302659,QA,Qatar,Asia
+302594,RE,Reunion,Africa
+302712,RO,Romania,Europe
+302713,RS,Serbia,Europe
+302714,RU,Russia,Europe
+302595,RW,Rwanda,Africa
+302660,SA,Saudi Arabia,Asia
+302781,SB,Solomon Islands,Oceania
+302596,SC,Seychelles,Africa
+302597,SD,Sudan,Africa
+302715,SE,Sweden,Europe
+302661,SG,Singapore,Asia
+302598,SH,"Saint Helena, Ascension and Tristan da Cunha",Africa
+302716,SI,Slovenia,Europe
+302717,SK,Slovakia,Europe
+302599,SL,Sierra Leone,Africa
+302718,SM,San Marino,Europe
+302600,SN,Senegal,Africa
+302601,SO,Somalia,Africa
+302800,SR,Suriname,SA
+302614,SS,South Sudan,Africa
+302602,ST,Sao Tome and Principe,Africa
+302752,SV,El Salvador,North America
+302761,SX,Sint Maarten,North America
+302662,SY,Syria,Asia
+302603,SZ,Eswatini,Africa
+302753,TC,Turks and Caicos Islands,North America
+302604,TD,Chad,Africa
+302617,TF,French Southern and Antarctic Lands,Africa
+302605,TG,Togo,Africa
+302663,TH,Thailand,Asia
+302664,TJ,Tajikistan,Asia
+302782,TK,Tokelau,Oceania
+302665,TL,Timor-Leste,Asia
+302666,TM,Turkmenistan,Asia
+302606,TN,Tunisia,Africa
+302783,TO,Tonga,Oceania
+302667,TR,Turkey,Asia
+302754,TT,Trinidad and Tobago,North America
+302784,TV,Tuvalu,Oceania
+302668,TW,Taiwan,Asia
+302607,TZ,Tanzania,Africa
+302719,UA,Ukraine,Europe
+302608,UG,Uganda,Africa
+302785,UM,United States Minor Outlying Islands,Oceania
+302755,US,United States,North America
+302801,UY,Uruguay,SA
+302669,UZ,Uzbekistan,Asia
+302721,VA,Vatican City,Europe
+302756,VC,Saint Vincent and the Grenadines,North America
+302802,VE,Venezuela,SA
+302757,VG,British Virgin Islands,North America
+302758,VI,U.S. Virgin Islands,North America
+302670,VN,Vietnam,Asia
+302786,VU,Vanuatu,Oceania
+302787,WF,Wallis and Futuna,Oceania
+302788,WS,Samoa,Oceania
+302720,XK,Kosovo,Europe
+302671,YE,Yemen,Asia
+302609,YT,Mayotte,Africa
+302610,ZA,South Africa,Africa
+302611,ZM,Zambia,Africa
+302612,ZW,Zimbabwe,Africa
+302613,ZZ,Unknown or unassigned country,Africa
