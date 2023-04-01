@@ -69,16 +69,16 @@ CREATE TABLE company_has_airplane(
 CREATE INDEX airplane_model_idx ON airplane (model);
 
 -- maybe we can delete user table, because there is not relationship with any other tables
-CREATE TABLE user (
-  username VARCHAR(255) PRIMARY KEY,
-  password VARCHAR(255) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  date_of_birth DATE NOT NULL,
-  gender CHAR(1) NOT NULL,
-  passport VARCHAR(255) NOT NULL,
-  address VARCHAR(255) NOT NULL,
-  type ENUM('admin', 'crew', 'passenger') NOT NULL -- simplize, maybe do not need crew to login 
-);
+-- CREATE TABLE user (
+--   username VARCHAR(255) PRIMARY KEY,
+--   password VARCHAR(255) NOT NULL,
+--   name VARCHAR(255) NOT NULL,
+--   date_of_birth DATE NOT NULL,
+--   gender CHAR(1) NOT NULL,
+--   passport VARCHAR(255) NOT NULL,
+--   address VARCHAR(255) NOT NULL,
+--   type ENUM('admin', 'crew', 'passenger') NOT NULL -- simplize, maybe do not need crew to login
+-- );
 
 DROP TABLE IF EXISTS crew;
 CREATE TABLE crew (
@@ -92,8 +92,9 @@ CREATE TABLE crew (
 DROP TABLE IF EXISTS admin;
 CREATE TABLE admin (
 	admin_id INT PRIMARY KEY,
+    username varchar(255) not null,
 	name varchar(255) not null
-	-- password varchar(64) not null,
+	password varchar(64) not null,
 -- start_date DATE NOT NULL,         -- may do not need it ?
 --   job_position VARCHAR(255) NOT NULL,  -- may do not need it?
 --   department VARCHAR(255) NOT NULL -- may do not need it?
@@ -102,14 +103,16 @@ CREATE TABLE admin (
 );
 
 CREATE TABLE passenger (
-  passenger_id INT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  date_of_birth DATE NOT NULL,
-  gender CHAR(1) NOT NULL,
-  passport VARCHAR(255) NOT NULL,
-  address VARCHAR(255) NOT NULL,
-  medical_conditions TEXT
--- FOREIGN KEY (name) references user(name) ON UPDATE CASCADE ON DELETE RESTRICT
+   passenger_id INT PRIMARY KEY auto_increment,
+   username VARCHAR(255) NOT NULL UNIQUE,
+   password VARCHAR(255) NOT NULL,
+   name VARCHAR(255) NOT NULL,
+   date_of_birth DATE NOT NULL,
+   gender CHAR(1) NOT NULL,
+   passport VARCHAR(255) NOT NULL,
+   address VARCHAR(255) NOT NULL,
+   medical_conditions TEXT
+    -- FOREIGN KEY (name) references user(name) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE credit_card (
