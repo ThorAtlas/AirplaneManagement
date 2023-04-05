@@ -36,18 +36,18 @@ CREATE TABLE airport (
 );
 
 -- according from professor's feedback, model should be an entity, and the model decide the num of seats of plane
-DROP TABLE IF EXISTS model;
-CREATE TABLE model (
-	mid VARCHAR(20) PRIMARY KEY,
-    num_seats INT NOT NULL
-);
+# DROP TABLE IF EXISTS model;
+# CREATE TABLE model (
+# 	mid VARCHAR(20) PRIMARY KEY,
+#     num_seats INT NOT NULL
+# );
 
-DROP TABLE IF EXISTS airplane;
-CREATE TABLE airplane (
-  id INT PRIMARY KEY,
-  model_id VARCHAR(20) NOT NULL,
-  FOREIGN KEY  (model_id) REFERENCES model(mid) ON UPDATE CASCADE ON DELETE RESTRICT
-);
+# DROP TABLE IF EXISTS airplane;
+# CREATE TABLE airplane (
+#   id INT PRIMARY KEY,
+#   model_id VARCHAR(20) NOT NULL,
+#   FOREIGN KEY  (model_id) REFERENCES model(mid) ON UPDATE CASCADE ON DELETE RESTRICT
+# );
 
 -- create a table name company which provide a airplane
 DROP TABLE IF EXISTS company;
@@ -56,17 +56,8 @@ CREATE TABLE company (
  name VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS company_has_airplane;
-CREATE TABLE company_has_airplane(
-	plane_id INT,
-    company_id INT,
-    PRIMARY KEY (plane_id, company_id),
-    FOREIGN key (plane_id) references airplane(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN key (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
-);
 
-
-CREATE INDEX airplane_model_idx ON airplane (model);
+# CREATE INDEX airplane_model_idx ON airplane (model);
 
 -- maybe we can delete user table, because there is not relationship with any other tables
 -- CREATE TABLE user (
@@ -93,8 +84,8 @@ DROP TABLE IF EXISTS admin;
 CREATE TABLE admin (
 	admin_id INT PRIMARY KEY,
     username varchar(255) not null,
-	name varchar(255) not null
-	password varchar(64) not null,
+	name varchar(255) not null,
+	password varchar(255) not null
 -- start_date DATE NOT NULL,         -- may do not need it ?
 --   job_position VARCHAR(255) NOT NULL,  -- may do not need it?
 --   department VARCHAR(255) NOT NULL -- may do not need it?
@@ -139,14 +130,22 @@ CREATE TABLE scheduled_flight (
   price DECIMAL(10,2) NOT NULL,
   departure_datetime DATETIME NOT NULL,
   duration TIME NOT NULL,
-  airplane_model VARCHAR(20) NOT NULL, -- should we check if this airplne is provide by the company?
+  -- airplane_model VARCHAR(20) NOT NULL, -- should we check if this airplne is provide by the company?
   company_id INT NOT NULL, -- (airport company which provide the plane)
-  FOREIGN KEY (airplane_model) REFERENCES model (mid) ON UPDATE CASCADE ON DELETE RESTRICT,
-  --    FOREIGN KEY (airplane_model) REFERENCES model (id) ON UPDATE CASCADE ON DELETE RESTRICT
+  available_seats INT NOT NULL,
   CONSTRAINT scheduled_flight_ibfk_from FOREIGN KEY (departure_airport) references airport (airport_id) ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT scheduled_flight_ibfk_to FOREIGN KEY (destination_airport) references airport (airport_id) ON UPDATE CASCADE ON DELETE RESTRICT,
   -- should we check the departure_city is not the same as destination?
   FOREIGN KEY (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+DROP TABLE IF EXISTS company_has_flight;
+CREATE TABLE company_has_airplane(
+     flight_id INT,
+     company_id INT,
+     PRIMARY KEY (flight_id, company_id),
+     FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+     FOREIGN key (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 
