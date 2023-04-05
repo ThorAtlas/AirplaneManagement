@@ -132,7 +132,7 @@ CREATE TABLE scheduled_flight (
   duration TIME NOT NULL,
   -- airplane_model VARCHAR(20) NOT NULL, -- should we check if this airplne is provide by the company?
   company_id INT NOT NULL, -- (airport company which provide the plane)
-  available_seats INT NOT NULL,
+  seats INT NOT NULL,
   CONSTRAINT scheduled_flight_ibfk_from FOREIGN KEY (departure_airport) references airport (airport_id) ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT scheduled_flight_ibfk_to FOREIGN KEY (destination_airport) references airport (airport_id) ON UPDATE CASCADE ON DELETE RESTRICT,
   -- should we check the departure_city is not the same as destination?
@@ -140,14 +140,21 @@ CREATE TABLE scheduled_flight (
 );
 
 DROP TABLE IF EXISTS company_has_flight;
-CREATE TABLE company_has_airplane(
-     flight_id INT,
-     company_id INT,
-     PRIMARY KEY (flight_id, company_id),
-     FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-     FOREIGN key (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
+CREATE TABLE company_has_flight(
+   flight_id INT,
+   company_id INT,
+   PRIMARY KEY (flight_id, company_id),
+   FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+   FOREIGN key (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
+DROP TABLE IF EXISTS flight_available_seats;
+CREATE TABLE flight_available_seats(
+   flight_id INT,
+   available_seats INT NOT NULL,
+   PRIMARY KEY (flight_id),
+   FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
 
 CREATE TABLE ticket (
   ticket_id INT PRIMARY KEY,

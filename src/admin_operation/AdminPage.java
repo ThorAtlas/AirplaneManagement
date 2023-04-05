@@ -1,11 +1,13 @@
 package admin_operation;
 
+import home.LoginPage;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class AdminPage extends JFrame {
     private JPanel adminPanel;
@@ -19,25 +21,48 @@ public class AdminPage extends JFrame {
     private JTextField flightIdTextField;
     private JComboBox departureComboBox;
     private JComboBox destinationComboBox;
-    private JTextField DateTextField;
-    private JComboBox comboBox3;
-    private JTextField hhMmTextField;
+    private JTextField dateTextField;
+    private JComboBox airlineComboBox;
+    private JTextField priceTextField;
     private JTextField timeTextField;
     private JTable flightTable;
     private JScrollPane tablePane;
     private JTextField textField1;
     private JButton viewBookingButton;
     private JTable passengerTable;
+    private JTextField seatsTextField;
+    private JTextField durationTextField;
 
     DefaultTableModel flightTableModel;
     DefaultTableModel passengerTableModel;
+    DefaultComboBoxModel departureCityModel;
+    DefaultComboBoxModel destinationModel;
+    DefaultComboBoxModel airlineModel;
 
-    public AdminPage(Connection conn, String username) {
+    String flightId;
+    String destination;
+    String departure;
+    String date;
+    double price;
+    int seats;
+    String duration;
+    String airLine;
+    String dateTime;
+
+    public AdminPage(Connection conn, String username) throws SQLException {
         setContentPane(adminPanel);
         setTitle("Admin");
         setSize(1000,700);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         nameLabel.setText(username);
+
+        showFlightData(conn);
+        showPassengerData(conn);
+        departureComboBoxSetUp(conn);
+        destinationComboBoxSetUp(conn);
+        airlineComboBoxSetUp(conn);
+
+
         addEmployeesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -48,6 +73,102 @@ public class AdminPage extends JFrame {
                 }
             }
         });
+        signOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new LoginPage(conn).setVisible(true);
+            }
+        });
+        scheduleAFlightButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getInput();
+                String procedure = "{ call add_new_flight(?,?,?,?,?,?,?,?) }";
+                CallableStatement stmt = null;
+                try {
+                    stmt = conn.prepareCall(procedure);
+                    stmt.setString(1, flightId);
+                    stmt.setString(2, departure);
+                    stmt.setString(3, destination);
+                    stmt.setDouble(4, price);
+                    stmt.setString(5, dateTime);
+                    stmt.setString(6, duration);
+                    stmt.setInt(7, seats);
+                    stmt.setString(8, airLine);
+                    stmt.executeUpdate();
+                    flightTableModel.setRowCount(0);
+                    showFlightData(conn);
+                    JOptionPane.showMessageDialog( new JFrame(),
+                            "Successful");
+                } catch (Exception exception){
+                    JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    System.out.println(exception.getMessage());
+                }
+
+            }
+        });
+    }
+
+    private void airlineComboBoxSetUp(Connection conn) throws SQLException {
+        Statement statement = conn.createStatement();
+        String query = "select name from company";
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()) {
+            airlineModel.addElement(rs.getString("name"));
+        }
+    }
+
+    private void destinationComboBoxSetUp(Connection conn) throws SQLException {
+        Statement statement = conn.createStatement();
+        String query = "select name from airport";
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()) {
+            destinationModel.addElement(rs.getString("name"));
+        }
+    }
+
+    private void departureComboBoxSetUp(Connection conn) throws SQLException {
+        Statement statement = conn.createStatement();
+        String query = "select name from airport";
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()) {
+            departureCityModel.addElement(rs.getString("name"));
+        }
+    }
+
+    private void showPassengerData(Connection conn) {
+    }
+
+    private void showFlightData(Connection conn) throws SQLException {
+        String procedure = "{ call all_flights_detail() }";
+        CallableStatement stmt = conn.prepareCall(procedure);
+        ResultSet procedure_res = stmt.executeQuery();
+        while (procedure_res.next()){
+            flightTableModel.addRow(new Object[]{procedure_res.getInt("flight_id"),
+                    procedure_res.getString("departure_airport"),
+                    procedure_res.getString("destination_airport"),
+                    procedure_res.getString("departure_datetime"),
+                    procedure_res.getString("duration"),
+                    procedure_res.getString("name"),
+                    procedure_res.getString("available_seats"),
+                    procedure_res.getString("seats"),
+                    procedure_res.getString("price")});
+        }
+    }
+
+    private void getInput() {
+        flightId = flightIdTextField.getText();
+        departure = String.valueOf(departureComboBox.getSelectedItem());
+        destination = String.valueOf(destinationComboBox.getSelectedItem());
+        date = dateTextField.getText();
+        duration = durationTextField.getText();
+        price = Double.parseDouble(priceTextField.getText());
+        airLine = String.valueOf(airlineComboBox.getSelectedItem());
+        seats = Integer.parseInt(seatsTextField.getText());
+        dateTime = date + " " + timeTextField.getText();
+
+
     }
 
     private void createUIComponents() {
@@ -63,6 +184,8 @@ public class AdminPage extends JFrame {
         flightTableModel.addColumn("Duration");
         flightTableModel.addColumn("Airline");
         flightTableModel.addColumn("Available seats");
+        flightTableModel.addColumn("total seats");
+
         flightTableModel.addColumn("Price");
 
         // show passenger booking details in table
@@ -75,6 +198,14 @@ public class AdminPage extends JFrame {
         passengerTableModel.addColumn("Name");
         passengerTableModel.addColumn("Passport");
         passengerTableModel.addColumn("Price");
+
+        // combo box setup
+        departureCityModel = new DefaultComboBoxModel();
+        destinationModel = new DefaultComboBoxModel();
+        airlineModel = new DefaultComboBoxModel();
+        departureComboBox = new JComboBox(departureCityModel);
+        destinationComboBox = new JComboBox(destinationModel);
+        airlineComboBox = new JComboBox(airlineModel);
 
 
 
