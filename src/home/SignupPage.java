@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLOutput;
 import java.sql.Statement;
 
 public class SignupPage extends JFrame {
@@ -14,13 +15,13 @@ public class SignupPage extends JFrame {
     private JTextField passwordTextField;
     private JTextField nameTextField;
     private JTextField dateOfBirthTextField;
-    private JTextField genderTextField;
     private JTextField passportTextField;
     private JTextField addressTextField;
     private JTextField medicalConditionTextField;
     private JRadioButton adminRadioButton;
     private JRadioButton regularUserRadioButton;
     private JButton backButton;
+    private JComboBox genderComboBox;
 
     public SignupPage(Connection conn){
         setContentPane(signupPanel);
@@ -28,7 +29,6 @@ public class SignupPage extends JFrame {
         setSize(500,600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        // create a button group
         ButtonGroup bg = new ButtonGroup();
         bg.add(adminRadioButton);
         bg.add(regularUserRadioButton);
@@ -42,7 +42,7 @@ public class SignupPage extends JFrame {
                 String password = passwordTextField.getText();
                 String name = nameTextField.getText();
                 String date_of_birth = dateOfBirthTextField.getText();
-                String gender = genderTextField.getText();
+                String gender = String.valueOf(genderComboBox.getSelectedItem());
                 String passport = passportTextField.getText();
                 String address = addressTextField.getText();
                 String medical_condition = medicalConditionTextField.getText();
@@ -50,6 +50,7 @@ public class SignupPage extends JFrame {
                 // Execute SQL statements
                 Statement statement = null;
                 PreparedStatement pstmt = null;
+                System.out.println(gender);
                 try{
                     String sql = null;
                     if(regularUserRadioButton.isSelected()){
@@ -62,7 +63,7 @@ public class SignupPage extends JFrame {
                         pstmt.setString(3, name);
                         pstmt.setString(4, date_of_birth);
                         pstmt.setString(5, gender);
-                        pstmt.setString(6, password);
+                        pstmt.setString(6, passport);
                         pstmt.setString(7, address);
                         pstmt.setString(8, medical_condition);
                         System.out.println("passenger of row:"+ pstmt.executeUpdate());
@@ -84,6 +85,7 @@ public class SignupPage extends JFrame {
                     JOptionPane.showMessageDialog( new JFrame(),
                             "Invalid username", "Error",
                             JOptionPane.ERROR_MESSAGE);
+                    System.out.println(ex.getMessage());
 
                 }
 
@@ -96,5 +98,11 @@ public class SignupPage extends JFrame {
                 new LoginPage(conn).setVisible(true);
             }
         });
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        genderComboBox = new JComboBox(new String[] {"F", "M"});
+
     }
 }
