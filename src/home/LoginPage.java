@@ -1,5 +1,8 @@
 package home;
 
+import admin_operation.AdminPage;
+import passenger_operation.PassengerPage;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,8 +36,6 @@ public class LoginPage extends JFrame {
                 String username = usernameTextField.getText();
                 String password = passwordTextField.getText();
 
-                // Execute SQL statements
-                Statement statement = null;
                 try {
 //                    statement = conn.createStatement();
                     String query = null;
@@ -58,11 +59,19 @@ public class LoginPage extends JFrame {
                         do{
                             JOptionPane.showMessageDialog( new JFrame(),
                                     "Successful");
+                            // if login as admin, open admin page
+                            // if login as regular user, open passenger page
+                            dispose();
+                            if (adminRadioButton.isSelected()){
+                                new AdminPage(conn, username).setVisible(true);
+                            } else if (regularUserRadioButton.isSelected()){
+                                new PassengerPage(conn, username).setVisible(true);
+                            }
+
 
                         } while (rs.next());
                     }
-//
-
+                    pstmt.close();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog( new JFrame(),
                             ex.getMessage(), "Error",
