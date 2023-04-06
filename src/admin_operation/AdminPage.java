@@ -7,6 +7,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 
 public class AdminPage extends JFrame {
@@ -52,7 +54,7 @@ public class AdminPage extends JFrame {
     public AdminPage(Connection conn, String username) throws SQLException {
         setContentPane(adminPanel);
         setTitle("Admin");
-        setSize(1000,700);
+        setSize(1200,800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         nameLabel.setText(username);
 
@@ -104,6 +106,45 @@ public class AdminPage extends JFrame {
                 } catch (Exception exception){
                     JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                     System.out.println(exception.getMessage());
+                }
+
+            }
+        });
+        flightTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                int id = (int) flightTable.getValueAt(flightTable.getSelectedRow(), 0);
+                flightIdTextField.setText(String.valueOf(id));
+                seatsTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),7));
+                durationTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),4));
+                String dateTime = (String) flightTable.getValueAt(flightTable.getSelectedRow(),3);
+                String date[] = dateTime.split(" ");
+                dateTextField.setText(date[0]);
+                timeTextField.setText(date[1]);
+                priceTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),8));
+            }
+        });
+        cancelFlightButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cancel_flight_id = flightIdTextField.getText();
+                if(cancel_flight_id.isEmpty()){
+                    JOptionPane.showMessageDialog(new JFrame(), "Flight id is empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    String procedure = "{ call delete_flight(?) }";
+                    CallableStatement stmt = null;
+                    try {
+                        stmt = conn.prepareCall(procedure);
+                        stmt.setString(1,cancel_flight_id);
+                        stmt.executeUpdate();
+                        flightTableModel.setRowCount(0);
+                        showFlightData(conn);
+                        JOptionPane.showMessageDialog( new JFrame(),
+                                "Deleted Successful");
+                    } catch (SQLException exception) {
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             }
@@ -192,12 +233,15 @@ public class AdminPage extends JFrame {
         // add title
         passengerTableModel = new DefaultTableModel();
         passengerTable = new JTable(passengerTableModel);
-        passengerTableModel.addColumn("Ticket ID");
-        passengerTableModel.addColumn("Flight ID");
-        passengerTableModel.addColumn("Username");
-        passengerTableModel.addColumn("Name");
-        passengerTableModel.addColumn("Passport");
-        passengerTableModel.addColumn("Price");
+//        passengerTableModel.addColumn("Ticket ID");
+//        passengerTableModel.addColumn("Flight ID");
+//        passengerTableModel.addColumn("Username");
+//        passengerTableModel.addColumn("Name");
+//        passengerTableModel.addColumn("Passport");
+//        passengerTableModel.addColumn("Price");
+        passengerTableModel.addColumn("Passenger username");
+        passengerTableModel.addColumn("Passenger name");
+        passengerTableModel.addColumn("Orders amount");
 
         // combo box setup
         departureCityModel = new DefaultComboBoxModel();
