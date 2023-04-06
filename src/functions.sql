@@ -70,3 +70,21 @@ DELIMITER ;
 call all_flights_detail();
 
 
+-- procedure for delete a flight
+drop procedure delete_flight;
+DELIMITER $$
+create procedure delete_flight(IN flight_id_p INT)
+begin
+		DECLARE flight_count INT;
+SELECT COUNT(*) INTO flight_count FROM scheduled_flight WHERE flight_id = flight_id_p;
+IF flight_count = 0 THEN
+			SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Flight ID does not exist';
+ELSE
+DELETE FROM scheduled_flight WHERE flight_id = flight_id_p;
+END IF;
+end $$
+DELIMITER ;
+
+call delete_flight(123);
+
