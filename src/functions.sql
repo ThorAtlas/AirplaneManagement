@@ -59,13 +59,13 @@ DELIMITER ;
 
 call add_new_flight("123", "Ocean Reef Club Airport", "Loring Seaplane Base", 100.2, "2022-10-11 23:59:59", "03:21:21", 60, "American Airlines");
 call add_new_flight("223", "Ocean Reef Club Airport", "Loring Seaplane Base", 132.6, "2022-10-11 23:59:59", "03:21:21", 60, "American Airlines");
-select * from scheduled_flight natural join flight_available_seats join company where company.cid = scheduled_flight.company_id;
+-- select * from scheduled_flight natural join flight_sold_seats join company where company.cid = scheduled_flight.company_id;
 drop procedure all_flights_detail;
 DELIMITER $$
 create procedure all_flights_detail()
-	begin
-		select * from scheduled_flight natural join flight_available_seats join company where company.cid = scheduled_flight.company_id;
-    end $$
+begin
+    select * from scheduled_flight natural join flight_sold_seats join company where company.cid = scheduled_flight.company_id;
+end $$
 DELIMITER ;
 call all_flights_detail();
 

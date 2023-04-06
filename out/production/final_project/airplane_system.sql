@@ -144,16 +144,16 @@ CREATE TABLE company_has_flight(
    flight_id INT,
    company_id INT,
    PRIMARY KEY (flight_id, company_id),
-   FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+   FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE CASCADE,
    FOREIGN key (company_id) references company(cid) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
-DROP TABLE IF EXISTS flight_available_seats;
-CREATE TABLE flight_available_seats(
-   flight_id INT,
-   available_seats INT NOT NULL,
-   PRIMARY KEY (flight_id),
-   FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE RESTRICT
+DROP TABLE IF EXISTS flight_sold_seats;
+CREATE TABLE flight_sold_seats(
+    flight_id INT,
+    sold_seats INT DEFAULT 0,
+    PRIMARY KEY (flight_id),
+    FOREIGN key (flight_id) references scheduled_flight(flight_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE ticket (

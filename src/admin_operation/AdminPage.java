@@ -86,26 +86,28 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getInput();
-                String procedure = "{ call add_new_flight(?,?,?,?,?,?,?,?) }";
-                CallableStatement stmt = null;
-                try {
-                    stmt = conn.prepareCall(procedure);
-                    stmt.setString(1, flightId);
-                    stmt.setString(2, departure);
-                    stmt.setString(3, destination);
-                    stmt.setDouble(4, price);
-                    stmt.setString(5, dateTime);
-                    stmt.setString(6, duration);
-                    stmt.setInt(7, seats);
-                    stmt.setString(8, airLine);
-                    stmt.executeUpdate();
-                    flightTableModel.setRowCount(0);
-                    showFlightData(conn);
-                    JOptionPane.showMessageDialog( new JFrame(),
-                            "Successful");
-                } catch (Exception exception){
-                    JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                    System.out.println(exception.getMessage());
+                if(!flightId.isEmpty()) {
+                    String procedure = "{ call add_new_flight(?,?,?,?,?,?,?,?) }";
+                    CallableStatement stmt = null;
+                    try {
+                        stmt = conn.prepareCall(procedure);
+                        stmt.setString(1, flightId);
+                        stmt.setString(2, departure);
+                        stmt.setString(3, destination);
+                        stmt.setDouble(4, price);
+                        stmt.setString(5, dateTime);
+                        stmt.setString(6, duration);
+                        stmt.setInt(7, seats);
+                        stmt.setString(8, airLine);
+                        stmt.executeUpdate();
+                        flightTableModel.setRowCount(0);
+                        showFlightData(conn);
+                        JOptionPane.showMessageDialog(new JFrame(),
+                                "Successful");
+                    } catch (Exception exception) {
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        System.out.println(exception.getMessage());
+                    }
                 }
 
             }
@@ -128,22 +130,48 @@ public class AdminPage extends JFrame {
         cancelFlightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cancel_flight_id = flightIdTextField.getText();
-                if(cancel_flight_id.isEmpty()){
-                    JOptionPane.showMessageDialog(new JFrame(), "Flight id is empty", "ERROR", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    String procedure = "{ call delete_flight(?) }";
+                String procedure = "{ call delete_flight(?) }";
+                CallableStatement stmt = null;
+                try {
+                    stmt = conn.prepareCall(procedure);
+                    stmt.setString(1,flightId);
+                    stmt.executeUpdate();
+                    flightTableModel.setRowCount(0);
+                    showFlightData(conn);
+                    JOptionPane.showMessageDialog( new JFrame(),
+                            "Deleted Successful");
+                } catch (SQLException exception) {
+                    JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+
+
+            }
+        });
+        changeFlightButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getInput();
+                if(!flightId.isEmpty()) {
+                    String procedure = "{ call update_flight(?,?,?,?,?,?,?,?) }";
                     CallableStatement stmt = null;
                     try {
                         stmt = conn.prepareCall(procedure);
-                        stmt.setString(1,cancel_flight_id);
+                        stmt.setString(1, flightId);
+                        stmt.setString(2, departure);
+                        stmt.setString(3, destination);
+                        stmt.setDouble(4, price);
+                        stmt.setString(5, dateTime);
+                        stmt.setString(6, duration);
+                        stmt.setInt(7, seats);
+                        stmt.setString(8, airLine);
                         stmt.executeUpdate();
                         flightTableModel.setRowCount(0);
                         showFlightData(conn);
-                        JOptionPane.showMessageDialog( new JFrame(),
-                                "Deleted Successful");
-                    } catch (SQLException exception) {
+                        JOptionPane.showMessageDialog(new JFrame(),
+                                "Successful");
+                    } catch (Exception exception) {
                         JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        System.out.println(exception.getMessage());
                     }
                 }
 
@@ -199,15 +227,19 @@ public class AdminPage extends JFrame {
     }
 
     private void getInput() {
-        flightId = flightIdTextField.getText();
-        departure = String.valueOf(departureComboBox.getSelectedItem());
-        destination = String.valueOf(destinationComboBox.getSelectedItem());
-        date = dateTextField.getText();
-        duration = durationTextField.getText();
-        price = Double.parseDouble(priceTextField.getText());
-        airLine = String.valueOf(airlineComboBox.getSelectedItem());
-        seats = Integer.parseInt(seatsTextField.getText());
-        dateTime = date + " " + timeTextField.getText();
+        if(flightIdTextField.getText().isEmpty()){
+            JOptionPane.showMessageDialog(new JFrame(), "Flight id is empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        } else {
+            flightId = flightIdTextField.getText();
+            departure = String.valueOf(departureComboBox.getSelectedItem());
+            destination = String.valueOf(destinationComboBox.getSelectedItem());
+            date = dateTextField.getText();
+            duration = durationTextField.getText();
+            price = Double.parseDouble(priceTextField.getText());
+            airLine = String.valueOf(airlineComboBox.getSelectedItem());
+            seats = Integer.parseInt(seatsTextField.getText());
+            dateTime = date + " " + timeTextField.getText();
+        }
 
 
     }
