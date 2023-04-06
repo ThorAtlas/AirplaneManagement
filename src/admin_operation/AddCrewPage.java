@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-public class AddCrewPage extends JFrame{
+public class AddCrewPage extends JFrame {
     private JTextField crewNameTextField;
     private JTextField startDateTextField;
     private JTextField jobRoleTextField;
@@ -19,25 +19,16 @@ public class AddCrewPage extends JFrame{
     String query;
     ResultSet rs;
     DefaultTableModel model;
+
     public AddCrewPage(Connection conn) throws SQLException {
         setContentPane(addCrewPanel);
         setTitle("ADD CREW");
-        setSize(700,600);
-        setLocation(500,300);
+        setSize(700, 600);
+        setLocation(500, 300);
 
 
         //model.addRow(crewList.get(0));
         showTableData(conn);
-//        statement = conn.createStatement();
-//        query = "select * from crew";
-//        rs = statement.executeQuery(query);
-//        while (rs.next()) {
-//            //System.out.println(rs.getInt(1));
-//            model.addRow(new Object[]{rs.getInt(1), rs.getString(2),rs.getString(3),
-//                    rs.getString(4)});
-//        }
-
-
 
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -60,8 +51,9 @@ public class AddCrewPage extends JFrame{
                     stmt.executeUpdate();
                     model.setRowCount(0);
                     showTableData(conn);
-                    JOptionPane.showMessageDialog( new JFrame(),
+                    JOptionPane.showMessageDialog(new JFrame(),
                             "Successful");
+                    stmt.close();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -76,9 +68,10 @@ public class AddCrewPage extends JFrame{
         rs = statement.executeQuery(query);
         while (rs.next()) {
             //System.out.println(rs.getInt(1));
-            model.addRow(new Object[]{rs.getInt(1), rs.getString(2),rs.getString(3),
+            model.addRow(new Object[]{rs.getInt(1), rs.getString(2), rs.getString(3),
                     rs.getString(4)});
         }
+        statement.close();
     }
 
     private void createUIComponents() throws SQLException {
@@ -90,7 +83,6 @@ public class AddCrewPage extends JFrame{
         model.addColumn("Name");
         model.addColumn("Start Date");
         model.addColumn("Job Role");
-
 
 
     }

@@ -4,7 +4,6 @@ import home.LoginPage;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -29,7 +28,7 @@ public class AdminPage extends JFrame {
     private JTextField timeTextField;
     private JTable flightTable;
     private JScrollPane tablePane;
-    private JTextField textField1;
+    private JTextField passengerUsernameTextField;
     private JButton viewBookingButton;
     private JTable passengerTable;
     private JTextField seatsTextField;
@@ -54,7 +53,7 @@ public class AdminPage extends JFrame {
     public AdminPage(Connection conn, String username) throws SQLException {
         setContentPane(adminPanel);
         setTitle("Admin");
-        setSize(1200,800);
+        setSize(1200, 800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         nameLabel.setText(username);
 
@@ -86,7 +85,7 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getInput();
-                if(!flightId.isEmpty()) {
+                if (!flightId.isEmpty()) {
                     String procedure = "{ call add_new_flight(?,?,?,?,?,?,?,?) }";
                     CallableStatement stmt = null;
                     try {
@@ -104,6 +103,7 @@ public class AdminPage extends JFrame {
                         showFlightData(conn);
                         JOptionPane.showMessageDialog(new JFrame(),
                                 "Successful");
+                        stmt.close();
                     } catch (Exception exception) {
                         JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                         System.out.println(exception.getMessage());
@@ -118,28 +118,30 @@ public class AdminPage extends JFrame {
                 super.mousePressed(e);
                 int id = (int) flightTable.getValueAt(flightTable.getSelectedRow(), 0);
                 flightIdTextField.setText(String.valueOf(id));
-                seatsTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),7));
-                durationTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),4));
-                String dateTime = (String) flightTable.getValueAt(flightTable.getSelectedRow(),3);
+                seatsTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(), 7));
+                durationTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(), 4));
+                String dateTime = (String) flightTable.getValueAt(flightTable.getSelectedRow(), 3);
                 String date[] = dateTime.split(" ");
                 dateTextField.setText(date[0]);
                 timeTextField.setText(date[1]);
-                priceTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(),8));
+                priceTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(), 8));
             }
         });
         cancelFlightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                getInput();
                 String procedure = "{ call delete_flight(?) }";
                 CallableStatement stmt = null;
                 try {
                     stmt = conn.prepareCall(procedure);
-                    stmt.setString(1,flightId);
+                    stmt.setString(1, flightId);
                     stmt.executeUpdate();
                     flightTableModel.setRowCount(0);
                     showFlightData(conn);
-                    JOptionPane.showMessageDialog( new JFrame(),
+                    JOptionPane.showMessageDialog(new JFrame(),
                             "Deleted Successful");
+                    stmt.close();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
@@ -151,7 +153,7 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getInput();
-                if(!flightId.isEmpty()) {
+                if (!flightId.isEmpty()) {
                     String procedure = "{ call update_flight(?,?,?,?,?,?,?,?) }";
                     CallableStatement stmt = null;
                     try {
@@ -169,12 +171,50 @@ public class AdminPage extends JFrame {
                         showFlightData(conn);
                         JOptionPane.showMessageDialog(new JFrame(),
                                 "Successful");
+                        stmt.close();
                     } catch (Exception exception) {
                         JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                         System.out.println(exception.getMessage());
                     }
                 }
 
+            }
+        });
+        passengerTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                String selected_username = (String) passengerTable.getValueAt(passengerTable.getSelectedRow(), 0);
+                passengerUsernameTextField.setText(selected_username);
+            }
+        });
+        viewBookingButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selected_username = passengerUsernameTextField.getText();
+                if(selected_username.isEmpty()){
+                    JOptionPane.showMessageDialog(new JFrame(),"Please choose a passenger name", "ERROR", JOptionPane.ERROR_MESSAGE);
+                }else{
+                    String sql = "select passenger_exists(?)";
+                    PreparedStatement pstmt = null;
+                    try {
+                        pstmt = conn.prepareStatement(sql);
+                        pstmt.clearParameters();
+                        pstmt.setString(1,selected_username);
+                        ResultSet rs = pstmt.executeQuery();
+                        if (rs.next()) {
+                            if(rs.getInt(1) == 1){
+                                new ViewBookingPage(conn, selected_username).setVisible(true);
+                            } else {
+                                JOptionPane.showMessageDialog(new JFrame(),"username not exists", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                        pstmt.close();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                }
             }
         });
     }
@@ -186,6 +226,7 @@ public class AdminPage extends JFrame {
         while (rs.next()) {
             airlineModel.addElement(rs.getString("name"));
         }
+        statement.close();
     }
 
     private void destinationComboBoxSetUp(Connection conn) throws SQLException {
@@ -195,6 +236,7 @@ public class AdminPage extends JFrame {
         while (rs.next()) {
             destinationModel.addElement(rs.getString("name"));
         }
+        statement.close();
     }
 
     private void departureComboBoxSetUp(Connection conn) throws SQLException {
@@ -204,16 +246,26 @@ public class AdminPage extends JFrame {
         while (rs.next()) {
             departureCityModel.addElement(rs.getString("name"));
         }
+        statement.close();
     }
 
-    private void showPassengerData(Connection conn) {
+    private void showPassengerData(Connection conn) throws SQLException {
+        String procedure = "{ call get_ticket_total_of_passenger() }";
+        CallableStatement stmt = conn.prepareCall(procedure);
+        ResultSet procedure_res = stmt.executeQuery();
+        while (procedure_res.next()) {
+            passengerTableModel.addRow(new Object[]{procedure_res.getString(1),
+                    procedure_res.getString(2),
+                    procedure_res.getInt(3)});
+        }
+        stmt.close();
     }
 
     private void showFlightData(Connection conn) throws SQLException {
         String procedure = "{ call all_flights_detail() }";
         CallableStatement stmt = conn.prepareCall(procedure);
         ResultSet procedure_res = stmt.executeQuery();
-        while (procedure_res.next()){
+        while (procedure_res.next()) {
             flightTableModel.addRow(new Object[]{procedure_res.getInt("flight_id"),
                     procedure_res.getString("departure_airport"),
                     procedure_res.getString("destination_airport"),
@@ -224,10 +276,11 @@ public class AdminPage extends JFrame {
                     procedure_res.getString("seats"),
                     procedure_res.getString("price")});
         }
+        stmt.close();
     }
 
     private void getInput() {
-        if(flightIdTextField.getText().isEmpty()){
+        if (flightIdTextField.getText().isEmpty()) {
             JOptionPane.showMessageDialog(new JFrame(), "Flight id is empty", "ERROR", JOptionPane.ERROR_MESSAGE);
         } else {
             flightId = flightIdTextField.getText();
@@ -265,15 +318,9 @@ public class AdminPage extends JFrame {
         // add title
         passengerTableModel = new DefaultTableModel();
         passengerTable = new JTable(passengerTableModel);
-//        passengerTableModel.addColumn("Ticket ID");
-//        passengerTableModel.addColumn("Flight ID");
-//        passengerTableModel.addColumn("Username");
-//        passengerTableModel.addColumn("Name");
-//        passengerTableModel.addColumn("Passport");
-//        passengerTableModel.addColumn("Price");
         passengerTableModel.addColumn("Passenger username");
         passengerTableModel.addColumn("Passenger name");
-        passengerTableModel.addColumn("Orders amount");
+        passengerTableModel.addColumn("tickets amount");
 
         // combo box setup
         departureCityModel = new DefaultComboBoxModel();
@@ -282,7 +329,6 @@ public class AdminPage extends JFrame {
         departureComboBox = new JComboBox(departureCityModel);
         destinationComboBox = new JComboBox(destinationModel);
         airlineComboBox = new JComboBox(airlineModel);
-
 
 
     }

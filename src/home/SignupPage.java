@@ -78,6 +78,8 @@ public class SignupPage extends JFrame {
                     }
                     JOptionPane.showMessageDialog( new JFrame(),
                             "Successful!");
+                    assert pstmt != null;
+                    pstmt.close();
                     dispose();
                     new LoginPage(conn).setVisible(true);
 

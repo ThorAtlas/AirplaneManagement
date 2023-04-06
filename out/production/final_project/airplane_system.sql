@@ -158,8 +158,9 @@ CREATE TABLE flight_sold_seats(
 
 CREATE TABLE ticket (
   ticket_id INT PRIMARY KEY,
-  price DECIMAL(10,2) NOT NULL,
+#   price DECIMAL(10,2) NOT NULL,
   details TEXT,
+  amount INT DEFAULT 1,
   scheduled_flight_id INT NOT NULL,
   passenger_id INT NOT NULL,
   FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,

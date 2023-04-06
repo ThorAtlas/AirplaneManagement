@@ -36,8 +36,6 @@ public class LoginPage extends JFrame {
                 String username = usernameTextField.getText();
                 String password = passwordTextField.getText();
 
-                // Execute SQL statements
-                Statement statement = null;
                 try {
 //                    statement = conn.createStatement();
                     String query = null;
@@ -73,8 +71,7 @@ public class LoginPage extends JFrame {
 
                         } while (rs.next());
                     }
-//
-
+                    pstmt.close();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog( new JFrame(),
                             ex.getMessage(), "Error",
