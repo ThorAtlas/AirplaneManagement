@@ -192,7 +192,7 @@ public class AdminPage extends JFrame {
                     procedure_res.getString("departure_datetime"),
                     procedure_res.getString("duration"),
                     procedure_res.getString("name"),
-                    procedure_res.getString("available_seats"),
+                    procedure_res.getString("sold_seats"),
                     procedure_res.getString("seats"),
                     procedure_res.getString("price")});
         }
@@ -224,7 +224,7 @@ public class AdminPage extends JFrame {
         flightTableModel.addColumn("Datetime");
         flightTableModel.addColumn("Duration");
         flightTableModel.addColumn("Airline");
-        flightTableModel.addColumn("Available seats");
+        flightTableModel.addColumn("Sold seats");
         flightTableModel.addColumn("total seats");
 
         flightTableModel.addColumn("Price");

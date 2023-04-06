@@ -27,26 +27,26 @@ BEGIN
     DECLARE new_company_id INT;
     IF new_departure_airport_name = new_destination_name then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Destination and Departure cannot be same';
-	ELSE 
+	ELSE
 		select code into new_departure_code from airport where name = new_departure_airport_name;
 		select code into new_destination_code from airport where name = new_destination_name;
 		select cid into new_company_id from company where name = new_company;
 
-		INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price, 
+		INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price,
 			new_departure_datetime, new_duration, new_seats, new_company_id);
 	END IF;
 END$$
 DELIMITER ;
 
 -- trigger for update flight_avaiable_seats table after add new flight
+drop trigger flight_sold_seats_after_insert_scheduled_flight;
 DELIMITER $$
-create trigger flight_available_seats_after_insert_scheduled_flight after insert on scheduled_flight for each row
-	begin
-		IF NOT EXISTS (SELECT * FROM flight_available_seats where flight_id = NEW.flight_id) then
-			insert into flight_available_seats values (new.flight_id, new.seats);
-		end if;
-    end $$
+create trigger flight_sold_seats_after_insert_scheduled_flight after insert on scheduled_flight for each row
+begin
+    insert into flight_sold_seats(flight_id) values (new.flight_id);
+end $$
 DELIMITER ;
+
 -- trigger for update company_has_flight table after add new flight
 DELIMITER $$
 create trigger company_flight_after_insert_scheduled_flight AFTER INSERT on scheduled_flight for each row
@@ -87,4 +87,53 @@ end $$
 DELIMITER ;
 
 call delete_flight(123);
+
+-- update flight
+-- when update the flight, if this flight had been bought by passenger,
+-- and the new total seats is smaller than sold seats, then show error message
+drop procedure update_flight;
+DELIMITER $$
+create procedure update_flight(IN flight_id_p INT, IN new_departure_airport_name VARCHAR(255), IN new_destination_name VARCHAR(255),
+                               IN new_price DECIMAL, IN new_departure_datetime DATETIME, IN new_duration TIME, IN new_seats INT, IN new_company VARCHAR(255))
+BEGIN
+    DECLARE new_departure_code, new_destination_code VARCHAR(255);
+    DECLARE new_company_id INT;
+    DECLARE flight_count INT;
+
+    DECLARE sold_seats_num INT;
+
+    IF new_departure_airport_name = new_destination_name then
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Destination and Departure cannot be same';
+    ELSE
+        SELECT COUNT(*) INTO flight_count FROM scheduled_flight WHERE flight_id = flight_id_p;
+        IF flight_count = 0 THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Flight ID does not exist';
+        ELSE
+            select sold_seats into sold_seats_num from flight_sold_seats where flight_id = flight_id_p;
+            IF sold_seats_num > new_seats then
+                SIGNAL SQLSTATE '45000'
+                    SET MESSAGE_TEXT = 'The new total seats are smaller than sold seats of this flight';
+            ELSE
+                select code into new_departure_code from airport where name = new_departure_airport_name;
+                select code into new_destination_code from airport where name = new_destination_name;
+                select cid into new_company_id from company where name = new_company;
+
+                UPDATE scheduled_flight SET
+                departure_airport = new_departure_code,
+                destination_airport = new_destination_code,
+                price = new_price,
+                departure_datetime = new_departure_datetime,
+                duration = new_duration,
+                seats = new_seats,
+                company_id = new_company_id
+                WHERE flight_id = flight_id_p;
+            END IF;
+        END IF;
+    END IF;
+END $$
+DELIMITER ;
+
+call update_flight("123", "Ocean Reef Club Airport", "Loring Seaplane Base", 200, "2022-10-11 23:59:59", "03:21:21", 100, "American Airlines");
+
 
