@@ -136,4 +136,34 @@ DELIMITER ;
 
 call update_flight("123", "Ocean Reef Club Airport", "Loring Seaplane Base", 200, "2022-10-11 23:59:59", "03:21:21", 100, "American Airlines");
 
+-- procedure to get ticket amount of specific user
+-- select passenger.*, ticket.ticket_id, ticket.amount from passenger left join ticket on ticket.passenger_id = passenger.passenger_id;
 
+-- select t1.passenger_id, t1.username, SUM(ifnull(t1.amount,0)) as ticket_total from
+-- 	(select passenger.*, ticket.ticket_id, ticket.amount from passenger left join ticket on ticket.passenger_id = passenger.passenger_id) as t1
+--     group by t1.passenger_id;
+drop procedure get_ticket_total_of_passenger;
+DELIMITER $$
+create procedure get_ticket_total_of_passenger()
+BEGIN
+    select t1.username,t1.name, SUM(ifnull(t1.amount,0)) as ticket_total from
+        (select passenger.*, ticket.ticket_id, ticket.amount from passenger left join ticket on ticket.passenger_id = passenger.passenger_id) as t1
+    group by t1.passenger_id;
+END $$
+DELIMITER ;
+
+call get_ticket_total_of_passenger();
+
+-- function check if passenger exists
+drop function passenger_exists;
+DELIMITER $$
+CREATE FUNCTION passenger_exists(username_p VARCHAR(255))
+    RETURNS int deterministic reads sql data
+BEGIN
+    DECLARE user_count INT;
+    SELECT COUNT(*) INTO user_count FROM passenger WHERE username = username_p;
+    RETURN (user_count > 0);
+END $$
+DELIMITER ;
+
+select passenger_exists("w");

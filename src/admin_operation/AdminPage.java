@@ -217,6 +217,10 @@ public class AdminPage extends JFrame {
                 }
             }
         });
+
+        // TODO: add a onclick listener for showing flight button, it gonna allow admin to choose a flight and check more details,
+        // TODO: such as show which admin created this flight, users who book this flight.
+
     }
 
     private void airlineComboBoxSetUp(Connection conn) throws SQLException {
