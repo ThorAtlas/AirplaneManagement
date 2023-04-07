@@ -104,6 +104,16 @@ public class AdminPage extends JFrame {
                         JOptionPane.showMessageDialog(new JFrame(),
                                 "Successful");
                         stmt.close();
+
+                        // after schedule flight successful, update the admin_schedule_flight table
+                        String procedureAdmin_flight = "{call add_admin_scheduled_flight(?, ?)}";
+                        CallableStatement cstmt = conn.prepareCall(procedureAdmin_flight);
+                        cstmt.setString(1,username);
+                        cstmt.setString(2, flightId);
+                        cstmt.executeUpdate();
+                        System.out.println("add_admin_scheduled_flight_successful");
+                        cstmt.close();
+
                     } catch (Exception exception) {
                         JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
                         System.out.println(exception.getMessage());
@@ -220,7 +230,14 @@ public class AdminPage extends JFrame {
 
         // TODO: add a onclick listener for showing flight button, it gonna allow admin to choose a flight and check more details,
         // TODO: such as show which admin created this flight, users who book this flight.
+        showFlightsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedFlight = flightIdTextField.getText();
+                new ShowFlight(conn, flightId).setVisible(true);
 
+            }
+        });
     }
 
     private void airlineComboBoxSetUp(Connection conn) throws SQLException {

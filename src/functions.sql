@@ -167,3 +167,17 @@ END $$
 DELIMITER ;
 
 select passenger_exists("w");
+
+-- procedure for insert record of admin created a scheduled flight
+drop procedure add_admin_scheduled_flight;
+DELIMITER $$
+CREATE PROCEDURE add_admin_scheduled_flight(IN admin_username_p VARCHAR(255), flight_id_p INT)
+BEGIN
+    declare id INT;
+    select admin_id into id from admin where username = admin_username_p;
+    INSERT ignore into admin_scheduled_flight values (id, flight_id_p);
+END $$
+DELIMITER ;
+
+call add_admin_scheduled_flight("admin", 19821);
+
