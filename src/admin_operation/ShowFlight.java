@@ -17,11 +17,11 @@ public class ShowFlight extends JFrame {
     public ShowFlight(Connection conn, String flightId) throws SQLException {
         setContentPane(showFlightPanel);
         setTitle("Flight Details");
-        setSize(700,600);
-        setLocation(500,300);
+        setSize(700, 600);
+        setLocation(500, 300);
 
         flightIdLabel.setText(flightId);
-        System.out.println("flightId: "+ flightId);
+        System.out.println("flightId: " + flightId);
 
         String procedure = "{call find_admin_of_flight(?)}";
         CallableStatement stmt = conn.prepareCall(procedure);
@@ -35,11 +35,20 @@ public class ShowFlight extends JFrame {
         showPassengers(conn, flightId);
 
 
-
-
     }
 
-    private void showPassengers(Connection conn, String flightId) {
+    private void showPassengers(Connection conn, String flightId) throws SQLException {
+        String procedure = "{call get_all_passengers(?)}";
+        CallableStatement stmt = conn.prepareCall(procedure);
+        stmt.setString(1, flightId);
+        ResultSet procedure_res = stmt.executeQuery();
+        while (procedure_res.next()) {
+            passengersTableModel.addRow(new Object[]{procedure_res.getString(1),
+                    procedure_res.getString(2),
+                    procedure_res.getInt(3),
+                    procedure_res.getString(4)});
+        }
+        stmt.close();
     }
 
     private void createUIComponents() {

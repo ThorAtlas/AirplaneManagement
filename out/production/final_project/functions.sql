@@ -199,3 +199,17 @@ END $$
 DELIMITER ;
 
 call find_admin_of_flight(22222);
+
+-- procedure for getting all passengers of specific flight
+-- select passenger.username, passenger.name, t1.amount, t1.details from (select * from ticket where scheduled_flight_id = 123) as t1
+-- 	join passenger on passenger.passenger_id = t1.passenger_id;
+
+DELIMITER $$
+CREATE PROCEDURE get_all_passengers(IN flight_id_p INT)
+BEGIN
+    select passenger.username, passenger.name, t1.amount, t1.details from (select * from ticket where scheduled_flight_id = flight_id_p) as t1
+                                                                              join passenger on passenger.passenger_id = t1.passenger_id;
+END $$
+DELIMITER ;
+call get_all_passengers(123);
+
