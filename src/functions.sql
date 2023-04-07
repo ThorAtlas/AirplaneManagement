@@ -181,3 +181,13 @@ DELIMITER ;
 
 call add_admin_scheduled_flight("admin", 19821);
 
+-- procedure for funding the creator by providing flight id
+-- select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = 123);
+DELIMITER $$
+CREATE PROCEDURE find_admin_of_flight(flight_id_p INT)
+BEGIN
+    select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = flight_id_p);
+END $$
+DELIMITER ;
+
+call find_admin_of_flight(123);
