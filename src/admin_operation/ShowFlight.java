@@ -1,6 +1,7 @@
 package admin_operation;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -10,6 +11,8 @@ public class ShowFlight extends JFrame {
     private JPanel showFlightPanel;
     private JLabel flightIdLabel;
     private JLabel scheduledByLabel;
+    private JTable passengersTable;
+    DefaultTableModel passengersTableModel;
 
     public ShowFlight(Connection conn, String flightId) throws SQLException {
         setContentPane(showFlightPanel);
@@ -29,8 +32,24 @@ public class ShowFlight extends JFrame {
         }
         stmt.close();
 
+        showPassengers(conn, flightId);
 
 
 
+
+    }
+
+    private void showPassengers(Connection conn, String flightId) {
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        // show passengers of specific flight
+        passengersTableModel = new DefaultTableModel();
+        passengersTable = new JTable(passengersTableModel);
+        passengersTableModel.addColumn("Passenger username");
+        passengersTableModel.addColumn("Passenger name");
+        passengersTableModel.addColumn("Amount");
+        passengersTableModel.addColumn("Details");
     }
 }
