@@ -167,3 +167,35 @@ END $$
 DELIMITER ;
 
 select passenger_exists("w");
+
+-- procedure for insert record of admin created a scheduled flight
+drop procedure add_admin_scheduled_flight;
+DELIMITER $$
+CREATE PROCEDURE add_admin_scheduled_flight(IN admin_username_p VARCHAR(255), flight_id_p INT)
+BEGIN
+    declare id INT;
+    select admin_id into id from admin where username = admin_username_p;
+    INSERT ignore into admin_scheduled_flight values (id, flight_id_p);
+END $$
+DELIMITER ;
+
+call add_admin_scheduled_flight("admin", 19821);
+
+-- procedure for funding the creator by providing flight id
+-- select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = 123);
+DROP PROCEDURE find_admin_of_flight;
+DELIMITER $$
+CREATE PROCEDURE find_admin_of_flight(flight_id_p INT)
+BEGIN
+    DECLARE flight_count INT;
+    SELECT COUNT(*) INTO flight_count FROM scheduled_flight WHERE flight_id = flight_id_p;
+    IF flight_count = 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Flight ID does not exist';
+    ELSE
+        select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = flight_id_p);
+    END IF;
+END $$
+DELIMITER ;
+
+call find_admin_of_flight(22222);

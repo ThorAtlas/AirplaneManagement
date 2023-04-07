@@ -234,7 +234,11 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedFlight = flightIdTextField.getText();
-                new ShowFlight(conn, flightId).setVisible(true);
+                try {
+                    new ShowFlight(conn, selectedFlight).setVisible(true);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
 
             }
         });

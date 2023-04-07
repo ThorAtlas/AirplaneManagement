@@ -183,11 +183,19 @@ call add_admin_scheduled_flight("admin", 19821);
 
 -- procedure for funding the creator by providing flight id
 -- select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = 123);
+DROP PROCEDURE find_admin_of_flight;
 DELIMITER $$
 CREATE PROCEDURE find_admin_of_flight(flight_id_p INT)
 BEGIN
-    select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = flight_id_p);
+    DECLARE flight_count INT;
+    SELECT COUNT(*) INTO flight_count FROM scheduled_flight WHERE flight_id = flight_id_p;
+    IF flight_count = 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Flight ID does not exist';
+    ELSE
+        select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = flight_id_p);
+    END IF;
 END $$
 DELIMITER ;
 
-call find_admin_of_flight(123);
+call find_admin_of_flight(22222);
