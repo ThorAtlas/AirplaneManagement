@@ -213,3 +213,20 @@ END $$
 DELIMITER ;
 call get_all_passengers(123);
 
+-- procedure for getting all ticket of a passenger
+-- select scheduled_flight.flight_id, scheduled_flight.departure_airport, scheduled_flight.destination_airport,
+-- 	scheduled_flight.departure_datetime,scheduled_flight.duration, company.name, t1.amount, scheduled_flight.price from
+-- 		(select * from ticket where passenger_id = (select passenger_id from passenger where username = "test1")) as t1
+--         join scheduled_flight on scheduled_flight.flight_id = t1.scheduled_flight_id join company on company.cid = scheduled_flight.company_id;
+drop procedure if exists get_all_tickets;
+DELIMITER $$
+CREATE PROCEDURE get_all_tickets(IN username_p VARCHAR(255))
+BEGIN
+    select scheduled_flight.flight_id, scheduled_flight.departure_airport, scheduled_flight.destination_airport,
+           scheduled_flight.departure_datetime,scheduled_flight.duration, company.name, t1.amount, scheduled_flight.price from
+        (select * from ticket where passenger_id = (select passenger_id from passenger where username = username_p)) as t1
+            join scheduled_flight on scheduled_flight.flight_id = t1.scheduled_flight_id join company on company.cid = scheduled_flight.company_id;
+END $$
+DELIMITER ;
+call get_all_tickets("test1");
+

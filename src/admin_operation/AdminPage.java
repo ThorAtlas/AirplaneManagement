@@ -336,7 +336,6 @@ public class AdminPage extends JFrame {
         flightTableModel.addColumn("Airline");
         flightTableModel.addColumn("Sold seats");
         flightTableModel.addColumn("total seats");
-
         flightTableModel.addColumn("Price");
 
         // show passenger booking details in table
