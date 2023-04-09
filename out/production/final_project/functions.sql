@@ -167,3 +167,66 @@ END $$
 DELIMITER ;
 
 select passenger_exists("w");
+
+-- procedure for insert record of admin created a scheduled flight
+drop procedure add_admin_scheduled_flight;
+DELIMITER $$
+CREATE PROCEDURE add_admin_scheduled_flight(IN admin_username_p VARCHAR(255), flight_id_p INT)
+BEGIN
+    declare id INT;
+    select admin_id into id from admin where username = admin_username_p;
+    INSERT ignore into admin_scheduled_flight values (id, flight_id_p);
+END $$
+DELIMITER ;
+
+call add_admin_scheduled_flight("admin", 19821);
+
+-- procedure for funding the creator by providing flight id
+-- select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = 123);
+DROP PROCEDURE find_admin_of_flight;
+DELIMITER $$
+CREATE PROCEDURE find_admin_of_flight(flight_id_p INT)
+BEGIN
+    DECLARE flight_count INT;
+    SELECT COUNT(*) INTO flight_count FROM scheduled_flight WHERE flight_id = flight_id_p;
+    IF flight_count = 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Flight ID does not exist';
+    ELSE
+        select username from admin where admin_id = (select admin_id from admin_scheduled_flight where scheduled_flight_id = flight_id_p);
+    END IF;
+END $$
+DELIMITER ;
+
+call find_admin_of_flight(22222);
+
+-- procedure for getting all passengers of specific flight
+-- select passenger.username, passenger.name, t1.amount, t1.details from (select * from ticket where scheduled_flight_id = 123) as t1
+-- 	join passenger on passenger.passenger_id = t1.passenger_id;
+
+DELIMITER $$
+CREATE PROCEDURE get_all_passengers(IN flight_id_p INT)
+BEGIN
+    select passenger.username, passenger.name, t1.amount, t1.details from (select * from ticket where scheduled_flight_id = flight_id_p) as t1
+                                                                              join passenger on passenger.passenger_id = t1.passenger_id;
+END $$
+DELIMITER ;
+call get_all_passengers(123);
+
+-- procedure for getting all ticket of a passenger
+-- select scheduled_flight.flight_id, scheduled_flight.departure_airport, scheduled_flight.destination_airport,
+-- 	scheduled_flight.departure_datetime,scheduled_flight.duration, company.name, t1.amount, scheduled_flight.price from
+-- 		(select * from ticket where passenger_id = (select passenger_id from passenger where username = "test1")) as t1
+--         join scheduled_flight on scheduled_flight.flight_id = t1.scheduled_flight_id join company on company.cid = scheduled_flight.company_id;
+drop procedure if exists get_all_tickets;
+DELIMITER $$
+CREATE PROCEDURE get_all_tickets(IN username_p VARCHAR(255))
+BEGIN
+    select scheduled_flight.flight_id, scheduled_flight.departure_airport, scheduled_flight.destination_airport,
+           scheduled_flight.departure_datetime,scheduled_flight.duration, company.name, t1.amount, scheduled_flight.price from
+        (select * from ticket where passenger_id = (select passenger_id from passenger where username = username_p)) as t1
+            join scheduled_flight on scheduled_flight.flight_id = t1.scheduled_flight_id join company on company.cid = scheduled_flight.company_id;
+END $$
+DELIMITER ;
+call get_all_tickets("test1");
+
