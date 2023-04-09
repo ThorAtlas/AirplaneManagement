@@ -163,7 +163,7 @@ CREATE TABLE ticket (
   amount INT DEFAULT 1,
   scheduled_flight_id INT NOT NULL,
   passenger_id INT NOT NULL,
-  FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE CASCADE ,
   FOREIGN KEY (passenger_id) REFERENCES passenger (passenger_id) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
@@ -181,7 +181,7 @@ CREATE TABLE admin_scheduled_flight (
   -- crew_id ((just consider about when admin create a flight, does admin need to assign the crews of that flight?)
   PRIMARY KEY (admin_id, scheduled_flight_id),
   FOREIGN KEY (admin_id) REFERENCES admin (admin_id) ON UPDATE CASCADE ON DELETE RESTRICT,
-  FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE RESTRICT
+  FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 

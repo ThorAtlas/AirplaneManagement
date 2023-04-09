@@ -230,3 +230,128 @@ END $$
 DELIMITER ;
 call get_all_tickets("test1");
 
+-- when user buy a flight ticket, ticket table will insert a new record
+drop procedure if exists create_a_new_ticket;
+DELIMITER $$
+CREATE PROCEDURE create_a_new_ticket(IN amount_p INT, IN details_p TEXT, IN scheduled_flight_id_p INT, IN passenger_name_p VARCHAR(255))
+BEGIN
+    declare passenger_id_p INT;
+    declare ticket_count INT;
+    select passenger_id into passenger_id_p from passenger where username = passenger_name_p;
+    SELECT COUNT(*) INTO ticket_count FROM ticket WHERE scheduled_flight_id = scheduled_flight_id_p and passenger_id = passenger_id_p;
+    IF ticket_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You had bought this flight! ';
+    ELSE
+        INSERT INTO ticket(amount,details, scheduled_flight_id,passenger_id) VALUES (amount_p, details_p, scheduled_flight_id_p, passenger_id_p);
+    END IF;
+END $$
+DELIMITER ;
+
+call create_a_new_ticket(1, "", 123, "user");
+-- delete from ticket where scheduled_flight_id = 123;
+
+-- trigger, when user buy a ticket of flight, the trigger will update the sold seat of this flight
+drop trigger if exists update_flight_sold_seats_after_insert_ticket;
+DELIMITER $$
+CREATE TRIGGER update_flight_sold_seats_after_insert_ticket AFTER INSERT ON ticket FOR EACH ROW
+BEGIN
+    UPDATE flight_sold_seats
+    SET sold_seats = sold_seats + NEW.amount
+    WHERE flight_id = NEW.scheduled_flight_id;
+END $$
+DELIMITER ;
+
+-- procedure for cancel flight
+drop procedure delete_ticket;
+DELIMITER $$
+CREATE PROCEDURE delete_ticket( IN scheduled_flight_id_p INT, IN passenger_name_p VARCHAR(255))
+BEGIN
+    declare passenger_id_p INT;
+    declare ticket_count INT;
+    select passenger_id into passenger_id_p from passenger where username = passenger_name_p;
+    SELECT COUNT(*) INTO ticket_count FROM ticket WHERE scheduled_flight_id = scheduled_flight_id_p and passenger_id = passenger_id_p;
+    IF ticket_count = 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You had not bought this flight yet! ';
+    ELSE
+        DELETE from ticket where scheduled_flight_id = scheduled_flight_id_p and passenger_id = passenger_id_p;
+    END IF;
+END $$
+DELIMITER ;
+call delete_ticket(19821, "user");
+
+
+-- trigger, when user cancel a ticket of flight, the trigger will update the sold seat of this flight
+drop trigger if exists update_flight_sold_seats_after_delete_ticket;
+DELIMITER $$
+CREATE TRIGGER update_flight_sold_seats_after_delete_ticket AFTER delete ON ticket FOR EACH ROW
+BEGIN
+    UPDATE flight_sold_seats
+    SET sold_seats = sold_seats - OLD.amount
+    WHERE flight_id = OLD.scheduled_flight_id;
+END $$
+DELIMITER ;
+
+-- procedure update ticket
+drop procedure if exists update_ticket;
+DELIMITER $$
+CREATE PROCEDURE update_ticket(IN username_p VARCHAR(255), IN flight_id_p INT, IN amount_p INT, IN details_p TEXT)
+BEGIN
+    DECLARE ticket_count INT;
+    DECLARE sold_seats_num INT;
+    DECLARE total_seats INT;
+    DECLARE available_seats INT;
+    DECLARE passenger_id_p VARCHAR(255);
+
+    select passenger_id into passenger_id_p from passenger where username = username_p;
+    SELECT COUNT(*) INTO ticket_count FROM ticket WHERE scheduled_flight_id = flight_id_p and passenger_id = passenger_id_p;
+
+    IF ticket_count = 0 THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'You have not bought this flight';
+    ELSE
+        select sold_seats into sold_seats_num from flight_sold_seats where flight_id = flight_id_p;
+        select seats into total_seats from scheduled_flight where flight_id = flight_id_p;
+        set available_seats = total_seats - sold_seats_num;
+        IF available_seats < amount_p then
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'You cannot buy amount of tickets are larger than availabe seats of this flight';
+        ELSE
+            UPDATE ticket SET
+                              amount = amount_p,
+                              details = details_p
+            WHERE scheduled_flight_id = flight_id_p and passenger_id = passenger_id_p;
+        END IF;
+    END IF;
+END $$
+DELIMITER ;
+
+call update_ticket("user", 123, 1000,"");
+
+
+
+-- trigger update flight_sold_seats after update the ticket
+drop trigger if exists update_flight_sold_seats_after_update_ticket;
+DELIMITER $$
+CREATE TRIGGER update_flight_sold_seats_after_update_ticket after update on ticket for each row
+BEGIN
+    DECLARE new_sold_seats INT;
+    set new_sold_seats = 0;
+    UPDATE flight_sold_seats
+    SET sold_seats = new_sold_seats + NEW.amount
+    WHERE flight_id = OLD.scheduled_flight_id;
+END $$
+DELIMITER ;
+
+-- procedure: get ticket details
+DELIMITER $$
+CREATE PROCEDURE get_ticket_details (IN username_p VARCHAR(255), IN flight_id_p INT)
+BEGIN
+    DECLARE passenger_id_p VARCHAR(255);
+    select passenger_id into passenger_id_p from passenger where username = username_p;
+    select details from ticket where scheduled_flight_id = flight_id_p and passenger_id = passenger_id_p;
+END $$
+DELIMITER ;
+call get_ticket_details("user", 123);
+

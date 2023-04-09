@@ -33,6 +33,7 @@ public class AdminPage extends JFrame {
     private JTable passengerTable;
     private JTextField seatsTextField;
     private JTextField durationTextField;
+    private JButton refreshButton;
 
     DefaultTableModel flightTableModel;
     DefaultTableModel passengerTableModel;
@@ -238,6 +239,20 @@ public class AdminPage extends JFrame {
                     new ShowFlight(conn, selectedFlight).setVisible(true);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                flightTableModel.setRowCount(0);
+                passengerTableModel.setRowCount(0);
+                try {
+                    showFlightData(conn);
+                    showPassengerData(conn);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
 
             }
