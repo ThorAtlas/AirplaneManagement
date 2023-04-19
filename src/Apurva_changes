@@ -1,5 +1,0 @@
-1. Added auto_increment to admin_id in sql file
-
-TASKS to do :
-1) auto add existing flight data to the database while setting up -->> create tables in java
-2) how to setup database when we run main?? -->> insert from csv
