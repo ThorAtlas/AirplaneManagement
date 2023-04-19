@@ -46,7 +46,10 @@ public class PlaceOrderPage extends JFrame {
                     stmt.close();
                     dispose();
                 } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    //throw new RuntimeException(ex);
+                    JOptionPane.showMessageDialog(new JFrame(),
+                            ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
 
 
