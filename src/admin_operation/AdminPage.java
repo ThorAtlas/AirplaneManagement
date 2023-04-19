@@ -34,6 +34,7 @@ public class AdminPage extends JFrame {
     private JTextField seatsTextField;
     private JTextField durationTextField;
     private JButton refreshButton;
+    private JButton addFlightCrewButton;
 
     DefaultTableModel flightTableModel;
     DefaultTableModel passengerTableModel;
@@ -141,54 +142,82 @@ public class AdminPage extends JFrame {
         cancelFlightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getInput();
-                String procedure = "{ call delete_flight(?) }";
-                CallableStatement stmt = null;
-                try {
-                    stmt = conn.prepareCall(procedure);
-                    stmt.setString(1, flightId);
-                    stmt.executeUpdate();
-                    flightTableModel.setRowCount(0);
-                    showFlightData(conn);
-                    JOptionPane.showMessageDialog(new JFrame(),
+                if(flightTable.getSelectedRow() != -1) {
+                    getInput();
+                    String procedure = "{ call delete_flight(?) }";
+                    CallableStatement stmt = null;
+                    try {
+                        stmt = conn.prepareCall(procedure);
+                        stmt.setString(1, flightId);
+                        stmt.executeUpdate();
+                        flightTableModel.setRowCount(0);
+                        showFlightData(conn);
+                        JOptionPane.showMessageDialog(new JFrame(),
                             "Deleted Successful");
-                    stmt.close();
-                } catch (SQLException exception) {
-                    JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        stmt.close();
+                    } catch (SQLException exception) {
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(new JFrame(),
+                        "Please select a flight from the table below to perform the operation.");
                 }
+            }
+        });
 
-
+        addFlightCrewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedFlight = flightIdTextField.getText();
+                if (!selectedFlight.isEmpty()) {
+                    try {
+                        new AddCrewToFlightPage(conn, selectedFlight).setVisible(true);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(new JFrame(),
+                        "Please select a flight from the table below to perform the operation.");
+                }
             }
         });
         changeFlightButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                getInput();
-                if (!flightId.isEmpty()) {
-                    String procedure = "{ call update_flight(?,?,?,?,?,?,?,?) }";
-                    CallableStatement stmt = null;
-                    try {
-                        stmt = conn.prepareCall(procedure);
-                        stmt.setString(1, flightId);
-                        stmt.setString(2, departure);
-                        stmt.setString(3, destination);
-                        stmt.setDouble(4, price);
-                        stmt.setString(5, dateTime);
-                        stmt.setString(6, duration);
-                        stmt.setInt(7, seats);
-                        stmt.setString(8, airLine);
-                        stmt.executeUpdate();
-                        flightTableModel.setRowCount(0);
-                        showFlightData(conn);
-                        JOptionPane.showMessageDialog(new JFrame(),
+                if(flightTable.getSelectedRow() != -1) {
+                    getInput();
+                    if (!flightId.isEmpty()) {
+                        String procedure = "{ call update_flight(?,?,?,?,?,?,?,?) }";
+                        CallableStatement stmt = null;
+                        try {
+                            stmt = conn.prepareCall(procedure);
+                            stmt.setString(1, flightId);
+                            stmt.setString(2, departure);
+                            stmt.setString(3, destination);
+                            stmt.setDouble(4, price);
+                            stmt.setString(5, dateTime);
+                            stmt.setString(6, duration);
+                            stmt.setInt(7, seats);
+                            stmt.setString(8, airLine);
+                            stmt.executeUpdate();
+                            flightTableModel.setRowCount(0);
+                            showFlightData(conn);
+                            JOptionPane.showMessageDialog(new JFrame(),
                                 "Successful");
-                        stmt.close();
-                    } catch (Exception exception) {
-                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                        System.out.println(exception.getMessage());
+                            stmt.close();
+                        } catch (Exception exception) {
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(),
+                                "ERROR", JOptionPane.ERROR_MESSAGE);
+                            System.out.println(exception.getMessage());
+                        }
                     }
+                } else {
+                    JOptionPane.showMessageDialog(new JFrame(),
+                        "Please select a flight from the table below to perform the operation.");
                 }
-
             }
         });
         passengerTable.addMouseListener(new MouseAdapter() {
@@ -234,11 +263,17 @@ public class AdminPage extends JFrame {
         showFlightsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedFlight = flightIdTextField.getText();
-                try {
-                    new ShowFlight(conn, selectedFlight).setVisible(true);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                if(flightTable.getSelectedRow() != -1) {
+                    String selectedFlight = flightIdTextField.getText();
+                    try {
+                        new ShowFlight(conn, selectedFlight).setVisible(true);
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(new JFrame(),
+                        "Please select a flight from the table below to perform the operation.");
                 }
 
             }

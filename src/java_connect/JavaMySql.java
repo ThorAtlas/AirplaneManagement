@@ -71,6 +71,7 @@ public class JavaMySql {
     }
 
     public Connection getConnection() throws SQLException {
+
         Connection conn = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.getUserName());

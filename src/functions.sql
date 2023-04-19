@@ -17,6 +17,27 @@ END$$
 DELIMITER ;
 CALL add_crew('John Doe', '2023-04-05', 'Pilot');
 
+
+DROP PROCEDURE IF EXISTS delete_crew;
+DELIMITER $$
+CREATE PROCEDURE delete_crew ( IN new_crew_id INT)
+BEGIN
+  DECLARE check_crew INT;
+  DECLARE crew_count INT;
+    select crew_id into check_crew from crew where crew_id = new_crew_id;
+    IF check_crew IS NULL then
+    		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: No such crew exists, please try again';
+    ELSE
+		SELECT count(*) into crew_count from crew_on_scheduled_flight where crew_id = new_crew_id;
+        IF crew_count = 0 then
+			delete from crew where crew_id = new_crew_id;
+		ELSE
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Cannot delete the crew, as it is assigned to some scheduled flights.';
+		END IF;
+    END IF;
+END$$
+DELIMITER ;
+
 -- add new flight
 drop procedure add_new_flight;
 DELIMITER $$
@@ -36,6 +57,31 @@ BEGIN
 			new_departure_datetime, new_duration, new_seats, new_company_id);
 	END IF;
 END$$
+DELIMITER ;
+
+-- add new crew to flight
+drop procedure add_crew_to_flight;
+DELIMITER $$
+CREATE PROCEDURE add_crew_to_flight (IN crew_id INT, IN flight_id INT)
+BEGIN
+  INSERT INTO crew_on_scheduled_flight VALUES (crew_id,flight_id);
+END $$
+DELIMITER ;
+
+-- procedure to delete crew from flight
+drop procedure delete_crew_from_flight;
+DELIMITER $$
+create procedure delete_crew_from_flight(IN crew_id_p INT, IN flight_id_p INT)
+begin
+		DECLARE crew_count INT;
+SELECT COUNT(*) INTO crew_count FROM crew_on_scheduled_flight WHERE scheduled_flight_id = flight_id_p and crew_id = crew_id_p;
+IF crew_count = 0 THEN
+			SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Crew is not scheduled to work on this flight.';
+ELSE
+DELETE FROM crew_on_scheduled_flight WHERE scheduled_flight_id = flight_id_p and crew_id = crew_id_p;
+END IF;
+end $$
 DELIMITER ;
 
 -- trigger for update flight_avaiable_seats table after add new flight
@@ -303,7 +349,7 @@ BEGIN
     DECLARE total_seats INT;
     DECLARE available_seats INT;
     DECLARE passenger_id_p VARCHAR(255);
-
+    DECLARE passenger_seats INT;
     select passenger_id into passenger_id_p from passenger where username = username_p;
     SELECT COUNT(*) INTO ticket_count FROM ticket WHERE scheduled_flight_id = flight_id_p and passenger_id = passenger_id_p;
 
@@ -313,10 +359,11 @@ BEGIN
     ELSE
         select sold_seats into sold_seats_num from flight_sold_seats where flight_id = flight_id_p;
         select seats into total_seats from scheduled_flight where flight_id = flight_id_p;
-        set available_seats = total_seats - sold_seats_num;
+        select amount into passenger_seats from ticket where passenger_id = passenger_id_p and scheduled_flight_id = flight_id_p;
+        set available_seats = total_seats - sold_seats_num + passenger_seats;
         IF available_seats < amount_p then
             SIGNAL SQLSTATE '45000'
-                SET MESSAGE_TEXT = 'You cannot buy amount of tickets are larger than availabe seats of this flight';
+                SET MESSAGE_TEXT = 'You cannot buy amount of tickets larger than availabe seats of this flight';
         ELSE
             UPDATE ticket SET
                               amount = amount_p,
@@ -337,9 +384,9 @@ DELIMITER $$
 CREATE TRIGGER update_flight_sold_seats_after_update_ticket after update on ticket for each row
 BEGIN
     DECLARE new_sold_seats INT;
-    set new_sold_seats = 0;
+    select sold_seats into new_sold_seats from flight_sold_seats where flight_id = NEW.scheduled_flight_id;
     UPDATE flight_sold_seats
-    SET sold_seats = new_sold_seats + NEW.amount
+    SET sold_seats = new_sold_seats - OLD.amount + NEW.amount
     WHERE flight_id = OLD.scheduled_flight_id;
 END $$
 DELIMITER ;

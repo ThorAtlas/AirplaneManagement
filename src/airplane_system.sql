@@ -1,5 +1,4 @@
--- database should name lower-case 
--- DROP DATABASE IF EXISTS `AirplaneManagement`;
+
 DROP DATABASE IF EXISTS `airplane_management`;
 CREATE DATABASE `airplane_management`;
 USE `airplane_management`;
@@ -82,7 +81,7 @@ CREATE TABLE crew (
 
 DROP TABLE IF EXISTS admin;
 CREATE TABLE admin (
-	admin_id INT PRIMARY KEY,
+	admin_id INT AUTO_INCREMENT PRIMARY KEY ,
     username varchar(255) not null,
 	name varchar(255) not null,
 	password varchar(255) not null
@@ -191,4 +190,12 @@ CREATE TABLE ticket_payment (
   PRIMARY KEY (ticket_id, payment_id),
   FOREIGN KEY (ticket_id) REFERENCES ticket (ticket_id) ON UPDATE CASCADE ON DELETE RESTRICT,
   FOREIGN KEY (payment_id) REFERENCES payment (payment_id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE TABLE crew_on_scheduled_flight (
+  crew_id INT NOT NULL,
+  scheduled_flight_id INT NOT NULL,
+  PRIMARY KEY (crew_id, scheduled_flight_id),
+  FOREIGN KEY (crew_id) REFERENCES crew (crew_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (scheduled_flight_id) REFERENCES scheduled_flight (flight_id) ON UPDATE CASCADE ON DELETE CASCADE
 );

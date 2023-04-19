@@ -19,7 +19,7 @@ public class PassengerPage extends JFrame {
     private JLabel currentUserLabel;
     private JPanel buttonsPanel;
     private JRadioButton searchFlightRadioButton;
-    private JRadioButton checkMyOrdersRadioButton;
+    private JButton checkMyOrdersButton;
     private JButton bookButton;
     private JTable allFlightsTable;
     private JTextField choosenFlightIdTextField;
@@ -42,7 +42,7 @@ public class PassengerPage extends JFrame {
         // create a button group
         ButtonGroup bg = new ButtonGroup();
         bg.add(searchFlightRadioButton);
-        bg.add(checkMyOrdersRadioButton);
+        bg.add(checkMyOrdersButton);
 
         signOutButton.addActionListener(new ActionListener() {
             @Override
@@ -51,14 +51,7 @@ public class PassengerPage extends JFrame {
                 new LoginPage(conn).setVisible(true);
             }
         });
-        searchFlightRadioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new SearchFlightPage(conn, username).setVisible(true);
-
-            }
-        });
-        checkMyOrdersRadioButton.addActionListener(new ActionListener() {
+        checkMyOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {

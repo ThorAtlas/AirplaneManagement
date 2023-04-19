@@ -5,6 +5,7 @@ import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
+
 //        DBConnectionUI dbc = new DBConnectionUI();
 //        dbc.setVisible(true);
         // connect to db

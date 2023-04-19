@@ -82,7 +82,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Details..."/>
+              <text value=""/>
             </properties>
           </component>
         </children>
