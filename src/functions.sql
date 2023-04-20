@@ -45,16 +45,21 @@ CREATE PROCEDURE add_new_flight (IN new_flight_id INT, IN new_departure_airport_
 					IN new_price DECIMAL, IN new_departure_datetime DATETIME, IN new_duration TIME, IN new_seats INT, IN new_company VARCHAR(255))
 BEGIN
 	DECLARE new_departure_code, new_destination_code VARCHAR(255);
-    DECLARE new_company_id INT;
+    DECLARE new_company_id, count_id INT;
     IF new_departure_airport_name = new_destination_name then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Destination and Departure cannot be same';
 	ELSE
-		select code into new_departure_code from airport where name = new_departure_airport_name;
-		select code into new_destination_code from airport where name = new_destination_name;
-		select cid into new_company_id from company where name = new_company;
+	  select count(*) into count_id from scheduled_flight where flight_id = new_flight_id;
+	  IF count_id > 0 then
+	    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Flight id already exists, try with a different ID';
+	  ELSE
+		  select code into new_departure_code from airport where name = new_departure_airport_name;
+		  select code into new_destination_code from airport where name = new_destination_name;
+		  select cid into new_company_id from company where name = new_company;
 
-		INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price,
-			new_departure_datetime, new_duration, new_seats, new_company_id);
+		  INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price,
+			  new_departure_datetime, new_duration, new_seats, new_company_id);
+	  END IF;
 	END IF;
 END$$
 DELIMITER ;
@@ -401,4 +406,3 @@ BEGIN
 END $$
 DELIMITER ;
 call get_ticket_details("user", 123);
-

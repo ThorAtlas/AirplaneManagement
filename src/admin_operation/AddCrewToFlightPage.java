@@ -40,8 +40,9 @@ public class AddCrewToFlightPage extends JFrame {
     setContentPane(MainPanel);
     System.out.println(flightId);
     setTitle("Add crew to Flight");
-    setSize(700, 650);
-    setLocation(500, 300);
+    setSize(950, 500);
+    setLocation(200, 100);
+    setResizable(false);
     getFlightInfo(conn, flightId);
     getCrewData(conn, flightId);
     getCrewForFlight(conn, flightId);

@@ -23,8 +23,9 @@ public class ViewBookingPage extends JFrame {
     public ViewBookingPage(Connection conn, String selectedUsername) throws SQLException {
         setContentPane(viewBookingPanel);
         setTitle("View Booking Details");
-        setSize(700,600);
-        setLocation(500,300);
+        setSize(950, 500);
+        setLocation(200, 100);
+        setResizable(false);
 
         usernameLabel.setText(selectedUsername);
         

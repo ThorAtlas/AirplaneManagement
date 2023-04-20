@@ -32,8 +32,9 @@ public class AddCrewPage extends JFrame {
   public AddCrewPage(Connection conn) throws SQLException {
     setContentPane(addCrewPanel);
     setTitle("ADD CREW");
-    setSize(700, 600);
-    setLocation(500, 300);
+    setSize(950, 500);
+    setLocation(200, 100);
+    setResizable(false);
 
     //model.addRow(crewList.get(0));
     showTableData(conn);
@@ -47,25 +48,29 @@ public class AddCrewPage extends JFrame {
         System.out.println("name: " + name);
         System.out.println("startDate: " + startDate);
 
-        // call book_has_genre（genre_p）procedure
-        //System.out.println("call procedure result:");
-        String procedure = "{ call add_crew(?,?,?) }";
-        CallableStatement stmt = null;
-        try {
-          stmt = conn.prepareCall(procedure);
-          stmt.setString(1, name);
-          stmt.setString(2, startDate);
-          stmt.setString(3, jobRole);
-          stmt.executeUpdate();
-          model.setRowCount(0);
-          showTableData(conn);
+        if(name.isEmpty() || startDate.isEmpty() || jobRole.isEmpty()) {
           JOptionPane.showMessageDialog(new JFrame(),
-              "Successful");
-          stmt.close();
-        } catch (SQLException ex) {
-          throw new RuntimeException(ex);
+          "ERROR: Employee name, start date and job role cannot be empty. Try Again.");
+        } else {
+          // call book_has_genre（genre_p）procedure
+          //System.out.println("call procedure result:");
+          String procedure = "{ call add_crew(?,?,?) }";
+          CallableStatement stmt = null;
+          try {
+            stmt = conn.prepareCall(procedure);
+            stmt.setString(1, name);
+            stmt.setString(2, startDate);
+            stmt.setString(3, jobRole);
+            stmt.executeUpdate();
+            model.setRowCount(0);
+            showTableData(conn);
+            JOptionPane.showMessageDialog(new JFrame(),
+                "Successful");
+            stmt.close();
+          } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+          }
         }
-
       }
     });
 

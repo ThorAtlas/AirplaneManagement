@@ -75,16 +75,39 @@ public class PassengerPage extends JFrame {
         bookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int id = Integer.parseInt(choosenFlightIdTextField.getText());
-                int amount = Integer.parseInt(amountTextField.getText());
-                double unitPrice = Double.parseDouble(flightUnitPrice.replace("$",""));
-                if ( choosenFlightIdTextField.getText().isEmpty()|| amountTextField.getText().isEmpty()){
-                    JOptionPane.showMessageDialog(new JFrame(), "Error: not choose flight or amount", "ERROR", JOptionPane.ERROR_MESSAGE);
-                } else if (amount > availableSeats){
-                    JOptionPane.showMessageDialog(new JFrame(), "Error: amount is bigger than available seats of flight", "ERROR", JOptionPane.ERROR_MESSAGE);
-                }
-                else {
-                    new PlaceOrderPage(conn, id, amount, unitPrice, username).setVisible(true);
+                try {
+                    if (allFlightsTable.getSelectedRow() != -1) {
+                        int id = Integer.parseInt(choosenFlightIdTextField.getText());
+                        if (choosenFlightIdTextField.getText().isEmpty()
+                            || amountTextField.getText().isEmpty()) {
+                            JOptionPane.showMessageDialog(new JFrame(),
+                                "Error: enter valid flight and amount", "ERROR",
+                                JOptionPane.ERROR_MESSAGE);
+                        } else if (Integer.parseInt(amountTextField.getText()) > availableSeats) {
+                            JOptionPane.showMessageDialog(new JFrame(),
+                                "Error: You cannot purchase more than available seats on flight",
+                                "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else if (Integer.parseInt(amountTextField.getText()) <= 0) {
+                            JOptionPane.showMessageDialog(new JFrame(),
+                                "Error: You need to buy atleast 1 ticket.", "ERROR",
+                                JOptionPane.ERROR_MESSAGE);
+
+                        } else {
+                            int amount = Integer.parseInt(amountTextField.getText());
+                            double unitPrice = Double.parseDouble(flightUnitPrice.replace("$", ""));
+                            new PlaceOrderPage(conn, id, amount, unitPrice, username).setVisible(
+                                true);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(new JFrame(),
+                            "Error: Please select a flight from table to book", "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+
+                    }
+                } catch (NumberFormatException exception) {
+                    JOptionPane.showMessageDialog(new JFrame(),
+                        "Error: Please enter a correct amount(number)", "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -111,19 +134,19 @@ public class PassengerPage extends JFrame {
             int total_seats = Integer.parseInt(procedure_res.getString("seats"));
             int available_seats = total_seats - sold_seats;
             allFlightsTableModel.addRow(new Object[]{procedure_res.getInt("flight_id"),
-                    procedure_res.getString("departure_airport"),
-                    procedure_res.getString("destination_airport"),
-                    procedure_res.getString("departure_datetime"),
-                    procedure_res.getString("duration"),
-                    procedure_res.getString("name"),
-                    available_seats,
-                    "$"+procedure_res.getString("price")});
+                procedure_res.getString("departure_airport"),
+                procedure_res.getString("destination_airport"),
+                procedure_res.getString("departure_datetime"),
+                procedure_res.getString("duration"),
+                procedure_res.getString("name"),
+                available_seats,
+                "$"+procedure_res.getString("price")});
         }
         stmt.close();
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here 
+        // TODO: place custom component creation code here
         allFlightsTableModel = new DefaultTableModel();
         allFlightsTable = new JTable(allFlightsTableModel);
         allFlightsTableModel.addColumn("Flight ID");
