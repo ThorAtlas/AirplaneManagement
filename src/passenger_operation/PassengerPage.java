@@ -1,5 +1,6 @@
 package passenger_operation;
 
+import admin_operation.ViewBookingPage;
 import home.LoginPage;
 
 import javax.swing.*;
@@ -8,10 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class PassengerPage extends JFrame {
     private JPanel passengerPanel;
@@ -78,25 +76,48 @@ public class PassengerPage extends JFrame {
                 try {
                     if (allFlightsTable.getSelectedRow() != -1) {
                         int id = Integer.parseInt(choosenFlightIdTextField.getText());
-                        if (choosenFlightIdTextField.getText().isEmpty()
-                            || amountTextField.getText().isEmpty()) {
-                            JOptionPane.showMessageDialog(new JFrame(),
-                                "Error: enter valid flight and amount", "ERROR",
-                                JOptionPane.ERROR_MESSAGE);
-                        } else if (Integer.parseInt(amountTextField.getText()) > availableSeats) {
-                            JOptionPane.showMessageDialog(new JFrame(),
-                                "Error: You cannot purchase more than available seats on flight",
-                                "ERROR", JOptionPane.ERROR_MESSAGE);
-                        } else if (Integer.parseInt(amountTextField.getText()) <= 0) {
-                            JOptionPane.showMessageDialog(new JFrame(),
-                                "Error: You need to buy atleast 1 ticket.", "ERROR",
-                                JOptionPane.ERROR_MESSAGE);
+                        String sql = "select flight_exists(?)";
+                        PreparedStatement pstmt = null;
+                        try {
+                            pstmt = conn.prepareStatement(sql);
+                            pstmt.clearParameters();
+                            pstmt.setInt(1,id);
+                            ResultSet rs = pstmt.executeQuery();
+                            if (rs.next()) {
+                                if(rs.getInt(1) == 1){
+                                    if (choosenFlightIdTextField.getText().isEmpty()
+                                            || amountTextField.getText().isEmpty()) {
+                                        JOptionPane.showMessageDialog(new JFrame(),
+                                                "Error: enter valid flight and amount", "ERROR",
+                                                JOptionPane.ERROR_MESSAGE);
+                                    } else if (Integer.parseInt(amountTextField.getText()) > availableSeats) {
+                                        JOptionPane.showMessageDialog(new JFrame(),
+                                                "Error: You cannot purchase more than available seats on flight",
+                                                "ERROR", JOptionPane.ERROR_MESSAGE);
+                                    } else if (Integer.parseInt(amountTextField.getText()) <= 0) {
+                                        JOptionPane.showMessageDialog(new JFrame(),
+                                                "Error: You need to buy atleast 1 ticket.", "ERROR",
+                                                JOptionPane.ERROR_MESSAGE);
 
-                        } else {
-                            int amount = Integer.parseInt(amountTextField.getText());
-                            double unitPrice = Double.parseDouble(flightUnitPrice.replace("$", ""));
-                            new PlaceOrderPage(conn, id, amount, unitPrice, username).setVisible(
-                                true);
+                                    } else {
+                                        int amount = Integer.parseInt(amountTextField.getText());
+                                        double unitPrice = Double.parseDouble(flightUnitPrice.replace("$", ""));
+                                        new PlaceOrderPage(conn, id, amount, unitPrice, username).setVisible(
+                                                true);
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(new JFrame(),"flight not exists", "ERROR", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                            pstmt.close();
+                        } catch (SQLException exception) {
+                            if (!exception.getSQLState().equals("45000")) {
+                                // Handle the error with custom error message
+                                JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                // Handle other errors with default error message
+                                JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     } else {
                         JOptionPane.showMessageDialog(new JFrame(),
@@ -118,7 +139,7 @@ public class PassengerPage extends JFrame {
                 try {
                     showAllFlights(conn);
                 } catch (SQLException exception) {
-                    if (exception.getErrorCode() == 1265) {
+                    if (!exception.getSQLState().equals("45000")) {
                         // Handle the error with custom error message
                         JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
                     } else {
