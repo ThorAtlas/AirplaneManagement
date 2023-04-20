@@ -63,10 +63,14 @@ public class AddCrewToFlightPage extends JFrame {
                 stmt.setString(2, flightId);
                 stmt.executeUpdate();
                 stmt.close();
-              } catch (Exception exception) {
-                JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR",
-                    JOptionPane.ERROR_MESSAGE);
-                System.out.println(exception.getMessage());
+              } catch (SQLException exception) {
+                if (exception.getErrorCode() == 1265) {
+                  // Handle the error with custom error message
+                  JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                } else {
+                  // Handle other errors with default error message
+                  JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
               }
             }
           }
@@ -77,8 +81,14 @@ public class AddCrewToFlightPage extends JFrame {
             getCrewForFlight(conn, flightId);
             JOptionPane.showMessageDialog(new JFrame(),
                 "Added Crew Successfully!");
-          } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+          } catch (SQLException exception) {
+            if (exception.getErrorCode() == 1265) {
+              // Handle the error with custom error message
+              JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } else {
+              // Handle other errors with default error message
+              JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
           }
         } else  {
           JOptionPane.showMessageDialog(new JFrame(),
@@ -103,10 +113,14 @@ public class AddCrewToFlightPage extends JFrame {
                 stmt.setString(2, flightId);
                 stmt.executeUpdate();
                 stmt.close();
-              } catch (Exception exception) {
-                JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR",
-                    JOptionPane.ERROR_MESSAGE);
-                System.out.println(exception.getMessage());
+              } catch (SQLException exception) {
+                if (exception.getErrorCode() == 1265) {
+                  // Handle the error with custom error message
+                  JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                } else {
+                  // Handle other errors with default error message
+                  JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                }
               }
             }
           }
@@ -117,8 +131,14 @@ public class AddCrewToFlightPage extends JFrame {
             getCrewForFlight(conn, flightId);
             JOptionPane.showMessageDialog(new JFrame(),
                 "Deleted Crew Successfully!");
-          } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
+          } catch (SQLException exception) {
+            if (exception.getErrorCode() == 1265) {
+              // Handle the error with custom error message
+              JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } else {
+              // Handle other errors with default error message
+              JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
           }
         } else {
           JOptionPane.showMessageDialog(new JFrame(),

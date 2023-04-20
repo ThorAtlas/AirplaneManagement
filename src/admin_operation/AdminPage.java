@@ -120,9 +120,14 @@ public class AdminPage extends JFrame {
                         System.out.println("add_admin_scheduled_flight_successful");
                         cstmt.close();
 
-                    } catch (Exception exception) {
-                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                        System.out.println(exception.getMessage());
+                    } catch (SQLException exception) {
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
 
@@ -162,8 +167,13 @@ public class AdminPage extends JFrame {
                             "Deleted Successful");
                         stmt.close();
                     } catch (SQLException exception) {
-                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR",
-                            JOptionPane.ERROR_MESSAGE);
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
 
                 } else {
@@ -180,9 +190,14 @@ public class AdminPage extends JFrame {
                 if (flightTable.getSelectedRow() != -1) {
                     try {
                         new AddCrewToFlightPage(conn, selectedFlight).setVisible(true);
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR",
-                            JOptionPane.ERROR_MESSAGE);
+                    } catch (SQLException exception) {
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(new JFrame(),
@@ -225,10 +240,14 @@ public class AdminPage extends JFrame {
                             JOptionPane.showMessageDialog(new JFrame(),
                                 "Successful");
                             stmt.close();
-                        } catch (Exception exception) {
-                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(),
-                                "ERROR", JOptionPane.ERROR_MESSAGE);
-                            System.out.println(exception.getMessage());
+                        } catch (SQLException exception) {
+                            if (exception.getErrorCode() == 1265) {
+                                // Handle the error with custom error message
+                                JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                // Handle other errors with default error message
+                                JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                            }
                         }
                     }
                 } else {
@@ -267,8 +286,14 @@ public class AdminPage extends JFrame {
                             }
                         }
                         pstmt.close();
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
+                    } catch (SQLException exception) {
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
 
                 }
@@ -284,9 +309,14 @@ public class AdminPage extends JFrame {
                     String selectedFlight = flightIdTextField.getText();
                     try {
                         new ShowPassengersOnFlight(conn, selectedFlight).setVisible(true);
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR",
-                            JOptionPane.ERROR_MESSAGE);
+                    } catch (SQLException exception) {
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }else {
                     JOptionPane.showMessageDialog(new JFrame(),
@@ -303,8 +333,14 @@ public class AdminPage extends JFrame {
                 try {
                     showFlightData(conn);
                     showPassengerData(conn);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                } catch (SQLException exception) {
+                    if (exception.getErrorCode() == 1265) {
+                        // Handle the error with custom error message
+                        JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        // Handle other errors with default error message
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             }

@@ -67,8 +67,14 @@ public class AddCrewPage extends JFrame {
             JOptionPane.showMessageDialog(new JFrame(),
                 "Successful");
             stmt.close();
-          } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+          } catch (SQLException exception) {
+            if (exception.getErrorCode() == 1265) {
+              // Handle the error with custom error message
+              JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } else {
+              // Handle other errors with default error message
+              JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
           }
         }
       }
@@ -95,8 +101,14 @@ public class AddCrewPage extends JFrame {
             JOptionPane.showMessageDialog(new JFrame(),
                 "Successful");
             stmt.close();
-          } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(new JFrame(), ex.getMessage());
+          } catch (SQLException exception) {
+            if (exception.getErrorCode() == 1265) {
+              // Handle the error with custom error message
+              JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+            } else {
+              // Handle other errors with default error message
+              JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
           }
 
         }
