@@ -2,6 +2,7 @@ package admin_operation;
 
 import home.LoginPage;
 
+import java.awt.EventQueue;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
@@ -9,12 +10,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
+import visualization.BarChartCompanyPerformance;
 
 public class AdminPage extends JFrame {
     private JPanel adminPanel;
     private JButton signOutButton;
     private JButton scheduleAFlightButton;
-    private JButton showFlightsButton;
+    private JButton showPassengersButton;
     private JButton changeFlightButton;
     private JButton cancelFlightButton;
     private JButton addEmployeesButton;
@@ -35,6 +37,7 @@ public class AdminPage extends JFrame {
     private JTextField durationTextField;
     private JButton refreshButton;
     private JButton addFlightCrewButton;
+    private JButton visualizeButton;
 
     DefaultTableModel flightTableModel;
     DefaultTableModel passengerTableModel;
@@ -87,6 +90,7 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 getInput();
+
                 if (!flightId.isEmpty()) {
                     String procedure = "{ call add_new_flight(?,?,?,?,?,?,?,?) }";
                     CallableStatement stmt = null;
@@ -104,7 +108,7 @@ public class AdminPage extends JFrame {
                         flightTableModel.setRowCount(0);
                         showFlightData(conn);
                         JOptionPane.showMessageDialog(new JFrame(),
-                                "Successful");
+                            "Successful");
                         stmt.close();
 
                         // after schedule flight successful, update the admin_schedule_flight table
@@ -137,6 +141,8 @@ public class AdminPage extends JFrame {
                 dateTextField.setText(date[0]);
                 timeTextField.setText(date[1]);
                 priceTextField.setText((String) flightTable.getValueAt(flightTable.getSelectedRow(), 8));
+                departureComboBox.setSelectedItem(flightTable.getValueAt(flightTable.getSelectedRow(),1));
+                destinationComboBox.setSelectedItem(flightTable.getValueAt(flightTable.getSelectedRow(),2));
             }
         });
         cancelFlightButton.addActionListener(new ActionListener() {
@@ -171,7 +177,7 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedFlight = flightIdTextField.getText();
-                if (!selectedFlight.isEmpty()) {
+                if (flightTable.getSelectedRow() != -1) {
                     try {
                         new AddCrewToFlightPage(conn, selectedFlight).setVisible(true);
                     } catch (SQLException ex) {
@@ -182,6 +188,17 @@ public class AdminPage extends JFrame {
                     JOptionPane.showMessageDialog(new JFrame(),
                         "Please select a flight from the table below to perform the operation.");
                 }
+            }
+        });
+
+        visualizeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EventQueue.invokeLater(() -> {
+
+                    BarChartCompanyPerformance ex = new BarChartCompanyPerformance(conn);
+                    ex.setVisible(true);
+                });
             }
         });
         changeFlightButton.addActionListener(new ActionListener() {
@@ -232,7 +249,7 @@ public class AdminPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selected_username = passengerUsernameTextField.getText();
-                if(selected_username.isEmpty()){
+                if(passengerTable.getSelectedRow() == -1){
                     JOptionPane.showMessageDialog(new JFrame(),"Please choose a passenger name", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }else{
                     String sql = "select passenger_exists(?)";
@@ -260,13 +277,13 @@ public class AdminPage extends JFrame {
 
         // TODO: add a onclick listener for showing flight button, it gonna allow admin to choose a flight and check more details,
         // TODO: such as show which admin created this flight, users who book this flight.
-        showFlightsButton.addActionListener(new ActionListener() {
+        showPassengersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(flightTable.getSelectedRow() != -1) {
                     String selectedFlight = flightIdTextField.getText();
                     try {
-                        new ShowFlight(conn, selectedFlight).setVisible(true);
+                        new ShowPassengersOnFlight(conn, selectedFlight).setVisible(true);
                     } catch (SQLException ex) {
                         JOptionPane.showMessageDialog(new JFrame(), ex.getMessage(), "ERROR",
                             JOptionPane.ERROR_MESSAGE);
@@ -330,8 +347,8 @@ public class AdminPage extends JFrame {
         ResultSet procedure_res = stmt.executeQuery();
         while (procedure_res.next()) {
             passengerTableModel.addRow(new Object[]{procedure_res.getString(1),
-                    procedure_res.getString(2),
-                    procedure_res.getInt(3)});
+                procedure_res.getString(2),
+                procedure_res.getInt(3)});
         }
         stmt.close();
     }
@@ -342,21 +359,23 @@ public class AdminPage extends JFrame {
         ResultSet procedure_res = stmt.executeQuery();
         while (procedure_res.next()) {
             flightTableModel.addRow(new Object[]{procedure_res.getInt("flight_id"),
-                    procedure_res.getString("departure_airport"),
-                    procedure_res.getString("destination_airport"),
-                    procedure_res.getString("departure_datetime"),
-                    procedure_res.getString("duration"),
-                    procedure_res.getString("name"),
-                    procedure_res.getString("sold_seats"),
-                    procedure_res.getString("seats"),
-                    procedure_res.getString("price")});
+                procedure_res.getString("departure_airport"),
+                procedure_res.getString("destination_airport"),
+                procedure_res.getString("departure_datetime"),
+                procedure_res.getString("duration"),
+                procedure_res.getString("name"),
+                procedure_res.getString("sold_seats"),
+                procedure_res.getString("seats"),
+                procedure_res.getString("price")});
         }
         stmt.close();
     }
 
     private void getInput() {
-        if (flightIdTextField.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(new JFrame(), "Flight id is empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+        if (flightIdTextField.getText().isEmpty() || dateTextField.getText().isEmpty()
+            || durationTextField.getText().isEmpty() || priceTextField.getText().isEmpty()
+            || seatsTextField.getText().isEmpty() || timeTextField.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(new JFrame(), "Flight details cannot be null/empty", "ERROR", JOptionPane.ERROR_MESSAGE);
         } else {
             flightId = flightIdTextField.getText();
             departure = String.valueOf(departureComboBox.getSelectedItem());

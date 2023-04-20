@@ -67,7 +67,7 @@ CREATE TABLE `admin_scheduled_flight` (
 
 LOCK TABLES `admin_scheduled_flight` WRITE;
 /*!40000 ALTER TABLE `admin_scheduled_flight` DISABLE KEYS */;
-INSERT INTO `admin_scheduled_flight` VALUES (1,123),(1,22210);
+INSERT INTO `admin_scheduled_flight` VALUES (1,22210),(1,22211),(1,22212),(1,22213),(1,22214),(1,22215),(1,22216);
 /*!40000 ALTER TABLE `admin_scheduled_flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +151,7 @@ CREATE TABLE `company_has_flight` (
 
 LOCK TABLES `company_has_flight` WRITE;
 /*!40000 ALTER TABLE `company_has_flight` DISABLE KEYS */;
-INSERT INTO `company_has_flight` VALUES (123,3860),(22210,8461);
+INSERT INTO `company_has_flight` VALUES (22214,10),(22215,10),(22211,22),(22213,22),(22212,24),(22216,24),(22210,8461);
 /*!40000 ALTER TABLE `company_has_flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,7 +231,7 @@ CREATE TABLE `crew_on_scheduled_flight` (
 
 LOCK TABLES `crew_on_scheduled_flight` WRITE;
 /*!40000 ALTER TABLE `crew_on_scheduled_flight` DISABLE KEYS */;
-INSERT INTO `crew_on_scheduled_flight` VALUES (2,123),(7,123),(1,22210),(3,22210),(7,22210);
+INSERT INTO `crew_on_scheduled_flight` VALUES (1,22210),(3,22210),(7,22210),(3,22212),(5,22212);
 /*!40000 ALTER TABLE `crew_on_scheduled_flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -256,7 +256,7 @@ CREATE TABLE `flight_sold_seats` (
 
 LOCK TABLES `flight_sold_seats` WRITE;
 /*!40000 ALTER TABLE `flight_sold_seats` DISABLE KEYS */;
-INSERT INTO `flight_sold_seats` VALUES (123,4),(22210,11);
+INSERT INTO `flight_sold_seats` VALUES (22210,9),(22211,20),(22212,34),(22213,14),(22214,18),(22215,10),(22216,1);
 /*!40000 ALTER TABLE `flight_sold_seats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +324,7 @@ CREATE TABLE `scheduled_flight` (
 
 LOCK TABLES `scheduled_flight` WRITE;
 /*!40000 ALTER TABLE `scheduled_flight` DISABLE KEYS */;
-INSERT INTO `scheduled_flight` VALUES (123,'JCY','BWL',129.00,'2011-10-12 02:29:00','09:21:00',100,3860),(22210,'OCA','WLR',129.00,'2023-04-08 14:29:00','02:21:00',11,10);
+INSERT INTO `scheduled_flight` VALUES (22210,'OCA','WLR',129.00,'2023-04-08 14:29:00','02:21:00',11,10),(22211,'CSE','TLF',150.00,'2023-04-19 12:00:00','05:50:00',50,22),(22212,'OCA','WLR',150.00,'2023-04-19 12:00:00','02:50:00',50,10),(22213,'WLR','GCT',150.00,'2023-04-19 12:00:00','02:50:00',50,22),(22214,'CSE','BZT',150.00,'2023-04-19 12:00:00','02:50:00',50,10),(22215,'ICY','MHS',150.00,'2023-04-19 20:00:00','02:50:00',50,10),(22216,'ICY','MHS',150.00,'2023-04-19 20:00:00','02:50:00',50,24);
 /*!40000 ALTER TABLE `scheduled_flight` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -411,7 +411,7 @@ CREATE TABLE `ticket` (
   KEY `passenger_id` (`passenger_id`),
   CONSTRAINT `ticket_ibfk_1` FOREIGN KEY (`scheduled_flight_id`) REFERENCES `scheduled_flight` (`flight_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `ticket_ibfk_2` FOREIGN KEY (`passenger_id`) REFERENCES `passenger` (`passenger_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -420,7 +420,7 @@ CREATE TABLE `ticket` (
 
 LOCK TABLES `ticket` WRITE;
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
-INSERT INTO `ticket` VALUES (10,4,'check update ',123,3),(12,5,'none',22210,4),(14,6,'For 5 people fefndelvkdnv, jnkjenm fv,dnkfnmkvmd v,d vkmfkpo42-3=0-423423434rW',22210,5);
+INSERT INTO `ticket` VALUES (12,5,'none',22210,4),(14,4,'For 5 people fefndelvkdnv, jnkjenm fv,dnkfnmkvmd v,d vkmfkpo42-3=0-423423434rW',22210,5),(15,20,'',22211,5),(16,34,'',22212,5),(17,14,'',22213,5),(18,18,'',22214,5),(19,10,'',22215,5),(20,1,'',22216,5);
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -615,16 +615,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `add_new_flight`(IN new_flight_id IN
 					IN new_price DECIMAL, IN new_departure_datetime DATETIME, IN new_duration TIME, IN new_seats INT, IN new_company VARCHAR(255))
 BEGIN
 	DECLARE new_departure_code, new_destination_code VARCHAR(255);
-    DECLARE new_company_id INT;
+    DECLARE new_company_id, count_id INT;
     IF new_departure_airport_name = new_destination_name then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Destination and Departure cannot be same';
-	ELSE 
-		select code into new_departure_code from airport where name = new_departure_airport_name;
-		select code into new_destination_code from airport where name = new_destination_name;
-		select cid into new_company_id from company where name = new_company;
+	ELSE
+	  select count(*) into count_id from scheduled_flight where flight_id = new_flight_id;
+	  IF count_id > 0 then
+	    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Flight id already exists, try with a different ID';
+	  ELSE
+		  select code into new_departure_code from airport where name = new_departure_airport_name;
+		  select code into new_destination_code from airport where name = new_destination_name;
+		  select cid into new_company_id from company where name = new_company;
 
-		INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price, 
-			new_departure_datetime, new_duration, new_seats, new_company_id);
+		  INSERT INTO scheduled_flight VALUES (new_flight_id, new_departure_code, new_destination_code, new_price,
+			  new_departure_datetime, new_duration, new_seats, new_company_id);
+	  END IF;
 	END IF;
 END ;;
 DELIMITER ;
@@ -1009,4 +1014,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-19 14:14:01
+-- Dump completed on 2023-04-19 20:47:47

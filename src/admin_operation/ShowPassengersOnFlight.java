@@ -7,18 +7,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ShowFlight extends JFrame {
+public class ShowPassengersOnFlight extends JFrame {
     private JPanel showFlightPanel;
     private JLabel flightIdLabel;
     private JLabel scheduledByLabel;
     private JTable passengersTable;
     DefaultTableModel passengersTableModel;
 
-    public ShowFlight(Connection conn, String flightId) throws SQLException {
+    public ShowPassengersOnFlight(Connection conn, String flightId) throws SQLException {
         setContentPane(showFlightPanel);
         setTitle("Flight Details");
-        setSize(700, 600);
-        setLocation(500, 300);
+        setSize(950, 500);
+        setLocation(200, 100);
+        setResizable(false);
 
         flightIdLabel.setText(flightId);
         System.out.println("flightId: " + flightId);
@@ -44,9 +45,9 @@ public class ShowFlight extends JFrame {
         ResultSet procedure_res = stmt.executeQuery();
         while (procedure_res.next()) {
             passengersTableModel.addRow(new Object[]{procedure_res.getString(1),
-                    procedure_res.getString(2),
-                    procedure_res.getInt(3),
-                    procedure_res.getString(4)});
+                procedure_res.getString(2),
+                procedure_res.getInt(3),
+                procedure_res.getString(4)});
         }
         stmt.close();
     }

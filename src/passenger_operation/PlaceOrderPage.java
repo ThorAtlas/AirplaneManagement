@@ -19,8 +19,9 @@ public class PlaceOrderPage extends JFrame {
     public PlaceOrderPage(Connection conn, int flightId, int amount, double unitPrice, String username) {
         setContentPane(placeOrderPanel);
         setTitle("Place an Order");
-        setSize(700, 600);
-        setLocation(500, 300);
+        setSize(950, 500);
+        setLocation(200, 100);
+        setResizable(false);
 
         flightIdTextField.setText(String.valueOf(flightId));
         amountTextField.setText(String.valueOf(amount));

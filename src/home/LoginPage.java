@@ -21,6 +21,8 @@ public class LoginPage extends JFrame {
         setContentPane(loginPanel);
         setTitle("LOGIN");
         setSize(450,300);
+        setLocation(350, 200);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // create a button group
