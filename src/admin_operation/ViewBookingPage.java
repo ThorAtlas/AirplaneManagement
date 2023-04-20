@@ -47,8 +47,14 @@ public class ViewBookingPage extends JFrame {
                     while (rs.next()) {
                         detailsTextArea.setText(rs.getString(1));
                     }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                } catch (SQLException exception) {
+                    if (exception.getErrorCode() == 1265) {
+                        // Handle the error with custom error message
+                        JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        // Handle other errors with default error message
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             }
@@ -75,8 +81,13 @@ public class ViewBookingPage extends JFrame {
                                 "Update Successful");
                         stmt.close();
                     } catch (SQLException exception){
-                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
-                    }
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }                    }
                 }
 
             }
@@ -102,7 +113,13 @@ public class ViewBookingPage extends JFrame {
                                 "Cancel Successful");
                         stmt.close();
                     } catch (SQLException exception) {
-                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        if (exception.getErrorCode() == 1265) {
+                            // Handle the error with custom error message
+                            JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            // Handle other errors with default error message
+                            JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
 

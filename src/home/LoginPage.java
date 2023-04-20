@@ -74,10 +74,14 @@ public class LoginPage extends JFrame {
                         } while (rs.next());
                     }
                     pstmt.close();
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog( new JFrame(),
-                            ex.getMessage(), "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException exception) {
+                    if (exception.getErrorCode() == 1265) {
+                        // Handle the error with custom error message
+                        JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        // Handle other errors with default error message
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
                     //throw new RuntimeException(ex);
                 }
 

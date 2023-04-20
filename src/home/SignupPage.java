@@ -3,10 +3,7 @@ package home;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLOutput;
-import java.sql.Statement;
+import java.sql.*;
 
 public class SignupPage extends JFrame {
     private JPanel signupPanel;
@@ -83,11 +80,14 @@ public class SignupPage extends JFrame {
                     dispose();
                     new LoginPage(conn).setVisible(true);
 
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog( new JFrame(),
-                            "Invalid username", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    System.out.println(ex.getMessage());
+                } catch (SQLException exception) {
+                    if (exception.getErrorCode() == 1265) {
+                        // Handle the error with custom error message
+                        JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        // Handle other errors with default error message
+                        JOptionPane.showMessageDialog(new JFrame(), exception.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+                    }
 
                 }
 
