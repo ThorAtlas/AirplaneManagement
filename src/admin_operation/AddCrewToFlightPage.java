@@ -64,7 +64,7 @@ public class AddCrewToFlightPage extends JFrame {
                 stmt.executeUpdate();
                 stmt.close();
               } catch (SQLException exception) {
-                if (exception.getErrorCode() == 1265) {
+                if (!exception.getSQLState().equals("45000")) {
                   // Handle the error with custom error message
                   JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -82,7 +82,7 @@ public class AddCrewToFlightPage extends JFrame {
             JOptionPane.showMessageDialog(new JFrame(),
                 "Added Crew Successfully!");
           } catch (SQLException exception) {
-            if (exception.getErrorCode() == 1265) {
+            if (!exception.getSQLState().equals("45000")) {
               // Handle the error with custom error message
               JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -114,7 +114,7 @@ public class AddCrewToFlightPage extends JFrame {
                 stmt.executeUpdate();
                 stmt.close();
               } catch (SQLException exception) {
-                if (exception.getErrorCode() == 1265) {
+                if (!exception.getSQLState().equals("45000")) {
                   // Handle the error with custom error message
                   JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -132,7 +132,7 @@ public class AddCrewToFlightPage extends JFrame {
             JOptionPane.showMessageDialog(new JFrame(),
                 "Deleted Crew Successfully!");
           } catch (SQLException exception) {
-            if (exception.getErrorCode() == 1265) {
+            if (!exception.getSQLState().equals("45000")) {
               // Handle the error with custom error message
               JOptionPane.showMessageDialog(new JFrame(), "Input Error", "ERROR", JOptionPane.ERROR_MESSAGE);
             } else {
